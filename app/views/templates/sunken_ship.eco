@@ -1,0 +1,5 @@
+<li id="<%= @id%>">
+	<span class="sunken-ship-title"><%= @name%></span>
+	<span class="sunken-ship-date"><%= @date%></span>
+	<span class="sunken-ship-description"><%= @description%></span>
+</li>

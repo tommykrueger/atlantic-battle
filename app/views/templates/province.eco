@@ -1,0 +1,32 @@
+<table>
+	<tr>
+		<td>Province Name: </td>
+		<td>
+			<span class="name"> <%= @name %></span>
+		</td>
+	</tr>
+	<tr>
+		<td>Harbor size: </td>
+		<td>
+			<span class="name"> <%= @harbor.level %></span>
+		</td>
+	</tr>
+</table>
+
+<p>Fleets:</p>
+<ul id="fleets">
+	<% for fleet in @fleets: %>
+		<li>	
+			<%= fleet.name  %>
+				
+				<ul class="fleet-ships-list">
+					<% for ship in fleet.ships: %>
+						<li><a class="ship-link" href=""><%= ship.name %></a></li>
+					<% end %>
+				</ul>
+
+		</li>
+	<% end %>
+</ul>
+
+<span id="close-btn"> &times; </span>

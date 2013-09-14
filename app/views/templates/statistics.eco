@@ -1,0 +1,11 @@
+<div id="content-left">
+	<ul id="statistics-menu">
+		<li id="sunken-ships">Show Sunken Ships</li>
+		<li id="ships-comparison">Ships Comparison</li>
+		<li id="ship-production">Ships Production</li>
+	</ul>
+</div>
+
+<div id="content-right">
+	<div id="graph-plot"></div>
+</div>

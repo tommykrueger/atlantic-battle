@@ -1,0 +1,52 @@
+<div id="interface">
+	<div id="header">
+		<div id="game-time">
+			<a id="game-btn" href="#"></a>
+			<span id="weekday"></span>
+		</div>
+		<div id="mainmenu-container">
+			<ul id="mainmenu">
+				<li id="goto" title="Go to Position">G</li>
+				<li id="goto-with-zoom" title="Go to Position with zoom">G</li>
+				<li id="map" title="Show Map">M</li>
+				<li id="production" title="Production">P</li>
+				<li id="units" title="Units">U</li>
+				<li id="events" title="Event History">E</li>
+				<li id="statistics" title="Statistics">S</li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+
+<div id="map-details"></div>
+
+<ul id="map-modes"></ul>
+<div id="minimap"></div>
+</div>
+
+<div id="filter-container">
+	<ul id="filter-list">
+		<li id="filter-borders">
+			<a href="#" title="Toggle Borders"></a>
+		</li>
+		<li id="filter-convoys">
+			<a href="#" title="Show/Hide Convoy Routes"></a>
+		</li>
+		<li id="filter-event">
+			<a href="#" title="Call Event (Border)"></a>
+		</li>
+		<li id="filter-diplomacy">
+			<a href="#" title="Diplomatic map view"></a>
+		</li>
+		<li id="filter-labels">
+			<a href="#" title="Show/Hide labels"></a>
+		</li>
+	</ul>
+</div>
+
+<ul id="sunk-reports"></ul>
+<ul id="events-list"></ul>
+
+
+

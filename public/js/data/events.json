@@ -1,0 +1,21 @@
+[
+	{
+		"id":1,
+		"date": "1939-09-01",
+		"name":"Der Zweite Weltkrieg",
+		"type": "major",
+		"description": "Mit dem Überfall auf Polen beginnt am 01. September 1939 der zweite Weltkrieg in Europa.",
+		"x": -4000,
+		"y": -1800
+	},
+	{
+		"id":2,
+		"date": "1939-09-03",
+		"name":"Die Kriegserklärung Großbritanniens und Frankreichs",
+		"type": "major",
+		"description": "Nach dem Überfall Duetschlands auf Polen erklärten die Regierungen Großbritanniens und Frankreichs Deutschland den Krieg",
+		"x": -3500,
+		"y": -1800
+	}
+
+]

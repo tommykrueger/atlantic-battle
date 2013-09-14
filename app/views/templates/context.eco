@@ -1,0 +1,8 @@
+<h2 id="context-headline"></h2>
+<span class="close-btn"> &times;</span>
+
+<div id="context-content">
+	<span id="loading">Loading ...</span>
+</div>
+
+<div id="context-footer"></div>

@@ -1,0 +1,47 @@
+[
+	{
+		"id":1,
+		"date": "1939-09-02",
+		"name":"Admiral Graf Spee",
+		"country": "ger",
+		"description": "Nach mehrwöchiger Kaperfahrt im Südatlnatik wurde das Deutsche Panzerschiffe Admiral Graf Spee von zwei Britischen Flottenverbänden gestellt und während der folgenden Schlacht schwer beschädigt. Das Schiff musste sich anschließend in die Bucht am Rio Plata in Montevideo zurückziehen, wo es schließlich von der eigenen Besatzung versenkt wurde.",
+		"x": 797,
+		"y": 1117
+	},
+	{
+		"id":2,
+		"date": "1945-05-04",
+		"name":"Deutschland",
+		"country": "ger",
+		"description": "Schiff wurde durch Britische Bomber beschädigt und letztendlich aufgegeben",
+		"x": 1000,
+		"y": 1000
+	},
+	{
+		"id":3,
+		"date": "1939-09-04",
+		"name":"Deutschland",
+		"country": "ger",
+		"description": "Schiff wurde durch Britische Bomber beschädigt und letztendlich aufgegeben",
+		"x": 800,
+		"y": 500
+	},
+	{
+		"id":4,
+		"date": "1939-09-06",
+		"name":"Deutschland",
+		"country": "ger",
+		"description": "Schiff wurde durch Britische Bomber beschädigt und letztendlich aufgegeben",
+		"x": 770,
+		"y": 450
+	},
+	{
+		"id":5,
+		"date": "1939-09-07",
+		"name":"Deutschland",
+		"country": "ger",
+		"description": "Schiff wurde durch Britische Bomber beschädigt und letztendlich aufgegeben",
+		"x": 700,
+		"y": 500
+	}
+]

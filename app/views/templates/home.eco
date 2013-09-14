@@ -1,0 +1,60 @@
+<div id="home">
+	<div id="content">
+  	<h1>Die Atlantikschlacht</h1>
+
+	  <ul id="home-list">
+	  	<li class="column">
+	  		<p>
+	  			Mit Ausbruch des Zweiten Weltkrieges in Europa am 01. September 1939 begann zugleich die längste und vielleicht 
+	  			auch wichtigste Schlacht des Krieges - die Atlantikschlacht.
+	  		</p>
+	  		<p>
+	  			Die Deutsche Kriegsmarine versuchte dabei die Britische Handelsschifffahrt durch Angriffe von Über- und Unterwasserschiffen 
+	  			zu beeinträchtigen. Das Ziel bestand darin Großbritannien durch eine Seeblockade von allen Seewegen und Importen abzuschneiden, 
+	  			um so das Land zur Kapitulation zu zwingen. 
+	  		</p>
+	  		<p>
+	  			Da Großbritanniens Wirtschaft und Rüstung stark abhängig von Importen war, musste gewährleistet werden, dass die Schifffahrtswege
+	  			geschützt werden. Schiffe die den Atlantik in Richtung der Britischen Inseln ansteuerten, wurden in Konvois zusammengefasst und von Kriegsschiffen eskortiert. Im Verlauf des Krieges stieg die Zahl der eingesetzten Kriegsschiffe kontinuierlich an.
+	  		</p>
+	  	</li>
+	  	<li class="column">
+	  		<p>
+	  			Die Besetzung Norwegens und Fankreichs im Frühjahr 1940 ermöglichte es der Deutschen Kriegsmarine ihre Schiffe 
+	  			und U-Boote außerhalb Deutschlands zu stationieren, um einen besseren Zugang zum Atlantik zu erlangen. Großbritannien war während dieser Zeit gezwungen sich gegen die Achsenmächte in Europa allein zu verteidigen.
+	  		</p>
+	  		<p>
+	  			<img src="img/photos/the-battle-of-the-north-atlantic-allied-convo-L-QZQh3B.jpeg" title="Photo " />
+	  		</p>
+	  	</li>
+	  	<li class="column">
+	  		<p>
+	  			Mit dem Kriegseintritt der USA änderte sich die startegische Situation in der Atlantikschlacht erheblich.
+	  			Nun konnten die Alliierten das nahezu unerschöpfliche Rüstungspotential der USA ausnutzen. Die Devise hieß Mehr Schiffe zu bauen, als der Gegner versenken kann. Gleichzeitig wurde durch die Einführung neuer Technologien, wie dem Sonar und das Radar sowie Fortschritte in der Entschlüsselung der Deutschen Kommunikationsstruktur die Deutsche U-Bootflotte zunehmend in die defensive gedrängt.
+
+	  			Man erwartete eine erneute Wende der Schlacht durch den Einsatz neuer U-Boottypen.
+	  		</p>
+	  		<p>
+	  			Das Ende des Zweiten Weltkrieges in Europa war auch das Ende der Atlantkischlacht, 
+	  			Insgesamt forderte die Schlacht zur See mehr als 90.000 Menschenleben <span class="text-small">(Quelle. <a href="http://en.wikipedia.org/wiki/Battle_of_the_Atlantic" target="_blank">Wikipedia</a>)</small>.
+	  		</p>
+	  	</li>
+	  </ul>
+
+	  <ul id="navigation">
+	  	<li><a class="btn" id="home-list-prev-btn" href="#">&laquo; zurück</a></li>
+	  	<li><a class="btn start-btn" href="#worldmap"> Los geht's</a></li>
+	  	<li><a class="btn" id="home-list-next-btn" href="#">weiterlesen &raquo;</a></li>
+	  </ul>
+
+	</div>
+</div>
+
+<footer id="footer"> 
+	<ul id="footer-menu">
+		<li id="home"><a href="/">Home</a></li>
+		<li id="impressum"><a href="#imprint">Impressum</a></li>
+		<li id="project"><a href="#project">Projekt</a></li>
+		<li id="feedback"><a href="#feedback">Feedback</a></li>
+	</ul>
+</footer>
