@@ -22,6 +22,11 @@
   -ms-user-select: none;
   user-select: none;
   */
+
+:-webkit-full-screen body
+  width 100%
+  height 100%
+
 body 
   width 100%
   margin 0 auto
@@ -88,3 +93,14 @@ h1
   cursor pointer
 .sunken-ship:hover
   fill-opacity 0.8
+
+
+.submarine-zone
+  fill red
+  fill-opacity 0.06
+  stroke none
+
+
+.inactive
+  transition all 250ms ease-in-out
+  opacity 0.0

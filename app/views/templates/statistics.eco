@@ -1,8 +1,9 @@
 <div id="content-left">
 	<ul id="statistics-menu">
-		<li id="sunken-ships">Show Sunken Ships</li>
-		<li id="ships-comparison">Ships Comparison</li>
-		<li id="ship-production">Ships Production</li>
+		<li id="sunken-ships"> &raquo; Show Sunken Ships</li>
+		<li id="ships-comparison"> &raquo; Ships Comparison</li>
+		<li id="ship-production"> &raquo; Ships Production</li>
+    <li id="submarine-losses"> &raquo; Submarine Losses (Ger)</li>
 	</ul>
 </div>
 

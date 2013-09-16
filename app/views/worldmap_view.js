@@ -10,8 +10,29 @@ module.exports = View.extend({
     this.borders = options.borders;
     this.locations = options.locations;
     this.fleets = options.fleets;
+    this.submarineZones = options.submarineZones;
 
+    this.submarineZonesPaths = [];
+     
     this.fleetImages = [];
+
+    // start-date | end-date
+    this.submarineZoneDates = [
+      ['01', '1939-09-01', '1940-03-01', 'German Submarine activity <br/><i>(Sep 1939 - Mar 1940)</i>'],
+      ['02', '1940-03-01', '1940-09-01', 'German Submarine activity (Mar 1940 - Sep 1940)'],
+      
+      ['03', '1940-09-01', '1941-03-01', 'German Submarine activity (Sep 1940 - Mar 1941)'],
+      ['03-01', '1940-09-01', '1941-03-01', 'German Submarine activity (Sep 1940 - Mar 1941)'],
+      
+      ['04', '1941-03-01', '1941-09-01', 'German Submarine activity (Mar 1941 - Sep 1941)'],
+      ['04-01', '1941-03-01', '1941-09-01', 'German Submarine activity (Mar 1941 - Sep 1941)'],
+
+      ['05', '1941-09-01', '1942-03-01', 'German Submarine activity (Sep 1941 - Mar 1942)'],
+
+      ['06', '1942-03-01', '1942-09-01', 'German Submarine activity (Mar 1942 - Sep 1942)'],
+      ['06-01', '1942-03-01', '1942-09-01', 'German Submarine activity (Mar 1942 - Sep 1942)']
+    ];
+
 
     _.bindAll(this, 'redraw', 'afterRender', 'moveTo');
 
@@ -91,11 +112,13 @@ module.exports = View.extend({
       var country = g.append('path')
             .attr('id', country.get('id'))
             .attr('class', 'province')
+            .attr('rel', country.get('rel'))
             .attr('d', country.get('path'))
             .attr('fill', $this.worldmapSettings.colors.country)
             .attr('title', country.get('id'))
-            .on('mouseover', $this.provinceMouseover)
+            .on('mouseenter', $this.provinceMouseover)
             .on('mouseout', $this.provinceMouseout)
+            .on('mousemove', $this.provinceMousemove)
             .on('click', $this.provinceClicked);
 
        // add the title
@@ -156,16 +179,110 @@ module.exports = View.extend({
         $this.fleetImages.push(fleetImage);
       }
 
-      //console.log(startDate);
-      //console.log(fleet);
+    });
 
+
+    // render submarine zones
+    var submarineZonesSVG = 
+      $this.plot
+        .append('g')
+        .attr('class', 'submarine-zones');
+
+    _.each(this.submarineZones.models, function(zone, idx){ 
+      var startDate = null;
+      var endDate = null;
+
+      var path = submarineZonesSVG
+        .append('path')
+          .attr('id', zone.get('id'))
+          .attr('rel', zone.get('rel'))
+          .attr('title', function(d, i){ 
+
+            // find the date from the list
+            var p = null;
+            _.each($this.submarineZoneDates, function(date, zoneIdx){
+
+              var d = date[0].toString();
+              if(d == zone.get('rel')){
+                p = date[3];
+              }
+                
+            });
+
+            return p;
+          })
+          .attr('class', 'submarine-zone inactive')
+          .attr('start_date', function(d, i){ 
+
+            // find the date from the list
+            var p = null;
+            _.each($this.submarineZoneDates, function(date, zoneIdx){
+
+              var d = date[0].toString();
+              if(d == zone.get('rel')){
+                startDate = date[1];
+                p = date[1];
+              }
+                
+            });
+
+            return p;
+          })
+          .attr('end_date', function(d, i){
+           // find the date from the list
+            var p = null;
+            _.each($this.submarineZoneDates, function(date, zoneIdx){
+
+              var d = date[0].toString();
+              if(d == zone.get('rel')){
+                endDate = date[2];
+                p = date[2];
+              }
+                
+            });
+
+            return p;
+          })
+          .attr('d', zone.get('d'))
+          .on('mouseenter', function(d, i){
+
+            $('#tooltip').html( d3.select(this).attr('title') );
+
+            $('#tooltip').css({
+              'left': d3.event.pageX + 24,
+              'top': d3.event.pageY + 24
+            });
+            
+            $('#tooltip').stop().fadeIn(24);
+          })
+          .on('mouseout', $this.provinceMouseout)
+          .on('mousemove', $this.provinceMousemove);
+
+        var obj = [
+          path, 
+          startDate, 
+          endDate
+        ];  
+
+        $this.submarineZonesPaths.push(obj);
     });
 
   	return this.$el;
   },
 
   provinceMouseover: function(elem){
-    //d3.select(this).attr('fill', '#898899');
+    //console.log(this);
+    var name = d3.select(this).attr('rel');
+
+    console.log(name);
+
+    $('#tooltip').text(name);
+
+    $('#tooltip').css({
+      'left': d3.event.pageX + 24,
+      'top': d3.event.pageY + 24
+    });
+    $('#tooltip').stop().fadeIn(24);
 
     //var title = d3.select(this).attr('title');
     //console.log(title);
@@ -179,7 +296,14 @@ module.exports = View.extend({
   },
 
   provinceMouseout: function(elem){
-    d3.select(this).attr('fill', '#fff');
+    $('#tooltip').stop().fadeOut(24);
+  },
+
+  provinceMousemove: function(elem){
+    $('#tooltip').css({
+      'left': d3.event.pageX + 24,
+      'top': d3.event.pageY + 24
+    });
   },
 
   // Open the dialog to see what is inside this province

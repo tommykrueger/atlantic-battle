@@ -19,8 +19,6 @@ module.exports = View.extend({
     this.fleets = this.options.fleets;
     this.sunkenShips = this.options.sunkenShips;
 
-    console.log('options', this.options);
-
     // add second is one day in game
     this.intervalTime = (24 * 60 * 60 * 1000); // hours/minutes/seconds/milliseconds
     // one second is one hour in game
@@ -56,7 +54,7 @@ module.exports = View.extend({
     ];
 
     
-    _.bindAll(this, 'renderEvents', 'renderFleets', 'renderSunkenShips', 'displayDate', 'gameLoop', 'toggleGameLoop', 'beforeRender');
+    _.bindAll(this, 'renderSubmarineZones', 'renderEvents', 'renderFleets', 'renderSunkenShips', 'displayDate', 'gameLoop', 'toggleGameLoop', 'beforeRender');
     this.displayDate();
   },
 
@@ -83,7 +81,7 @@ module.exports = View.extend({
     this.renderFleets();
     this.renderEvents();
     this.renderSunkenShips();
-
+    this.renderSubmarineZones();
   },
 
   displayDate: function(){
@@ -173,6 +171,35 @@ module.exports = View.extend({
     });
   },
 
+  renderSubmarineZones: function(){
+    var $this = this; 
+
+    var gameTime = $this.new_date.getTime();
+
+    _.each($this.worldmap.submarineZonesPaths, function(zone, idx){
+      var startDate = zone[1].split('-');
+      var startDateObj = new Date(startDate[0], startDate[1]-1, startDate[2]);
+
+      var endDate = zone[2].split('-');
+      var endDateObj = new Date(endDate[0], endDate[1]-1, endDate[2]);
+
+      //console.log($this.dayDifference(startDateObj, $this.new_date));
+
+      // activate if date is reached
+      if($this.dayDifference(startDateObj, $this.new_date) <= 0){
+        d3.select(zone[0].node())
+          .classed('inactive', false);
+      }
+
+      // deactivate if end date is reached
+      if($this.dayDifference(endDateObj, $this.new_date) <= 0){
+        d3.select(zone[0].node())
+          .classed('inactive', true);
+      }
+
+    });
+  },
+
   showScreen: function(){
 
   },
@@ -189,7 +216,7 @@ module.exports = View.extend({
   },
 
   dayDifference: function(startDate, endDate) {
-      return (startDate - endDate) / (1000*60*60*24);
+    return Math.round((startDate - endDate) / (1000*60*60*24));
   }
 
 });

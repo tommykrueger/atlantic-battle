@@ -8,6 +8,7 @@ var Locations = require('models/locations');
 var Events = require('models/events');
 var Fleets = require('models/fleets');
 var SunkenShips = require('models/sunken_ships');
+var SubmarineZones = require('models/submarine_zones');
 var Game = require('views/game_view');
 
 // views
@@ -49,6 +50,7 @@ module.exports = Backbone.Router.extend({
     var fleets = new Fleets();
     var gameEvents = new Events();
     var sunkenShips = new SunkenShips();
+    var submarineZones = new SubmarineZones();
 
     $.when(
       
@@ -57,7 +59,8 @@ module.exports = Backbone.Router.extend({
       locations.fetch(),
       fleets.fetch(),
       gameEvents.fetch(),
-      sunkenShips.fetch()
+      sunkenShips.fetch(),
+      submarineZones.fetch()
 
       ).done(function(){
 
@@ -65,7 +68,8 @@ module.exports = Backbone.Router.extend({
         provinces: provinces, 
         borders: borders, 
         locations: locations,
-        fleets: fleets
+        fleets: fleets,
+        submarineZones: submarineZones
       });
     
       $('body').append(worldmap.render().el);
@@ -75,7 +79,7 @@ module.exports = Backbone.Router.extend({
         worldmap: worldmap,
         gameEvents: gameEvents,
         fleets: fleets,
-        sunkenShips: sunkenShips
+        sunkenShips: sunkenShips        
       });
 
       game.beforeRender();

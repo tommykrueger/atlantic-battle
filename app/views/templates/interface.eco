@@ -27,6 +27,9 @@
 
 <div id="filter-container">
 	<ul id="filter-list">
+		<li id="filter-submarine-zones" title="Submarine Zones">
+			<a href="#" title="Submarine Zones"></a>
+		</li>
 		<li id="filter-borders">
 			<a href="#" title="Toggle Borders"></a>
 		</li>
@@ -39,14 +42,20 @@
 		<li id="filter-diplomacy">
 			<a href="#" title="Diplomatic map view"></a>
 		</li>
-		<li id="filter-labels">
-			<a href="#" title="Show/Hide labels"></a>
+		<li id="filter-fullscreen">
+			<a href="#" title="Fullscreen"></a>
 		</li>
 	</ul>
 </div>
 
 <ul id="sunk-reports"></ul>
 <ul id="events-list"></ul>
+
+
+<!-- container will hold the scvg plot, container element must be rendered at startup -->
+<div id="plot"></div>
+
+<div id="tooltip"></div>
 
 
 

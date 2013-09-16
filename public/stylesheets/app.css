@@ -192,6 +192,12 @@ ul#navigation a.start-btn {
 .province {
   fill: #888;
   fill-opacity: 0.4;
+  stroke-width: 0.1px;
+  -webkit-transition: all 250ms ease-in-out;
+  -moz-transition: all 250ms ease-in-out;
+  -o-transition: all 250ms ease-in-out;
+  -ms-transition: all 250ms ease-in-out;
+  transition: all 250ms ease-in-out;
 /*
 	stroke #dedede
 	stroke-width 0.25
@@ -201,6 +207,7 @@ ul#navigation a.start-btn {
 .border {
   fill: none;
   stroke-width: 0.25;
+/*http://mbostock.github.io/d3/tutorial/circle.html*/
 }
 #interface {
   width: 100%;
@@ -308,6 +315,15 @@ color #f0f0f0 {
   border: 1px solid #000;
   -webkit-border-radius: 6px;
   border-radius: 6px;
+}
+#tooltip {
+  padding: 6px;
+  color: #555;
+  position: absolute;
+  -webkit-border-radius: 6px;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  background: rgba(200,200,200,0.4);
 }
 .dialog {
   width: 560px;
@@ -436,15 +452,76 @@ color #f0f0f0 {
   background: #900000;
 }
 #context-view {
-  width: 72%;
+  width: 980px;
+  height: 600px;
+  margin: -300px 0 0 -490px;
+  padding: 32px 0;
   position: absolute;
-  top: 24px;
-  left: 24px;
+  top: 50%;
+  left: 50%;
+  color: #fff;
   z-index: 999;
-  background: #000;
-  opacity: 0.8;
-  filter: alpha(opacity=80);
-  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  background: #333;
+/*opacity 0.8*/
+}
+#context-view .close-btn {
+  width: 32px;
+  height: 32px;
+  color: #fff;
+  font-size: 2em;
+  text-align: center;
+  cursor: pointer;
+  background: #333;
+  position: absolute;
+  top: -12px;
+  right: -12px;
+  -webkit-border-radius: 50%;
+  border-radius: 50%;
+}
+#statistics #content-left,
+#statistics #content-right {
+  width: 220px;
+  display: inline-block;
+  vertical-align: top;
+}
+#statistics #content-left {
+  padding: 24px;
+}
+#statistics #content-right {
+  width: 720px;
+  overflow: hidden;
+}
+#statistics ul#statistics-menu li {
+  margin: 0 0 6px 0;
+  padding: 2px 4px;
+  cursor: pointer;
+  color: #e0e0e0;
+/*text-shadow #f0f0f0 0px 1px 1px */
+  border: 1px solid #999;
+  background: #bbb;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+#statistics ul#statistics-menu li:hover {
+  background: #aaa;
+}
+#statistics .axis path,
+#statistics .axis line {
+  fill: none;
+  stroke: rgba(128,128,128,0.2);
+  stroke-width: 1px;
+}
+#statistics .line {
+  fill: none;
+}
+#statistics .line.sunk-ships-line {
+  stroke: #4682b4;
+}
+#statistics .line.sunk-ships-submarine-line {
+  stroke: #f00;
+}
+#statistics .line.sunk-submarines-line {
+  stroke: #008000;
 }
 * {
   -webkit-box-sizing: border-box;
@@ -458,6 +535,10 @@ color #f0f0f0 {
   -ms-user-select: none;
   user-select: none;
   */
+}
+:-webkit-full-screen body {
+  width: 100%;
+  height: 100%;
 }
 body {
   width: 100%;
@@ -528,4 +609,19 @@ h1 {
 }
 .sunken-ship:hover {
   fill-opacity: 0.8;
+}
+.submarine-zone {
+  fill: #f00;
+  fill-opacity: 0.06;
+  stroke: none;
+}
+.inactive {
+  -webkit-transition: all 250ms ease-in-out;
+  -moz-transition: all 250ms ease-in-out;
+  -o-transition: all 250ms ease-in-out;
+  -ms-transition: all 250ms ease-in-out;
+  transition: all 250ms ease-in-out;
+  opacity: 0;
+  filter: alpha(opacity=0);
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
 }

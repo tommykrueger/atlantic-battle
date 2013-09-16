@@ -48,6 +48,7 @@ module.exports = View.extend({
 		}else{
 
 			contextView = new ContextView({context: context});
+			$('#context-view').remove();
 			$('body').append(contextView.render().el);
 		}
 	},
@@ -76,8 +77,36 @@ module.exports = View.extend({
 				path_old.transition().duration(5000).attr('d', path_new);
 
 				break;
+
+			case 'filter-fullscreen':
+				this.toggleFullScreen();
+				break;
 		}
 		
-	}
+	},
+
+	// source: https://developer.mozilla.org/samples/domref/fullscreen.html
+	toggleFullScreen: function() {
+	  
+		var element = document.getElementById("body");
+
+	  // firefox and chrome
+		if(!document.mozFullScreen && !document.webkitFullScreen) {
+      if(element.mozRequestFullScreen) {
+        element.mozRequestFullScreen();
+      }
+      else{
+        element.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+      }
+    } 
+    else{
+      if(document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } 
+      else{
+        document.webkitCancelFullScreen();
+      }
+    }
+  }
 
 });

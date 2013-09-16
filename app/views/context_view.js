@@ -15,40 +15,30 @@ module.exports = View.extend({
 
 		console.log('Context view loaded');
 
-		this.setContext();
-
 		_.bindAll(this, 'setContext', 'render', 'afterRender', 'close');
 	},
 
-	render: function(){
-		
-		this.$el.html(this.template(this.getRenderData()));
-		this.afterRender();
-
-		return this;
-	},
-
 	afterRender: function(){
-
+		this.setContext();
 	},
 
 	setContext: function(){
-
+		var $this = this;
 		switch(this.context){
 			case 'statistics':
 
 				var statisticsView = new StatisticsView();
-						this.$('#context-content').empty().append(statisticsView.render().el);
+					$this.$('#context-content').html(statisticsView.render().el);
 			break;
 		}
 	},
 
 	close: function(event){
 		var $this = this;
-	
-		$this.$el.fadeOut(250, function(){
+
+		//$this.$el.fadeOut(250, function(){
 			$this.destroy();
-		});
+		//});
 	}
 
 });
