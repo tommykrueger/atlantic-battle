@@ -1602,8 +1602,6 @@ window.require.register("views/game_view", function(exports, require, module) {
       this.gameIntervalFunction = function(){
         $this.gameLoop();
         $this.count++;
-
-        console.log('rendering game loop');
       };
 
       this.gameLoopInterval = setInterval(this.gameIntervalFunction, 1000);
@@ -1626,9 +1624,6 @@ window.require.register("views/game_view", function(exports, require, module) {
     },
 
     displayDate: function(){
-
-      //console.log('render before');
-
 
       var newDate = this.new_date.getDate() < 9 ? '0' + this.new_date.getDate() : this.new_date.getDate();
       var newHour = this.new_date.getHours() < 9 ? '0' + this.new_date.getHours() : this.new_date.getHours();
@@ -2500,7 +2495,7 @@ window.require.register("views/templates/context_statistics", function(exports, 
     }
     (function() {
       (function() {
-        __out.push('<div id="content-left">\n\t<ul id="statistics-menu">\n\t\t<li id="sunken-ships"> &raquo; Show Sunken Ships</li>\n\t\t<li id="ships-comparison"> &raquo; Ships Comparison</li>\n\t\t<li id="ship-production"> &raquo; Ships Production</li>\n    <li id="submarine-losses"> &raquo; Submarine Losses (Ger)</li>\n\t</ul>\n</div>\n\n<div id="content-right">\n\t<div id="graph-plot"></div>\n</div>');
+        __out.push('<div id="content-left">\n\t<!--\n  <ul id="statistics-menu">\n\t\t<li id="sunken-ships"> &raquo; Show Sunken Ships</li>\n\t\t<li id="ships-comparison"> &raquo; Ships Comparison</li>\n\t\t<li id="ship-production"> &raquo; Ships Production</li>\n    <li id="submarine-losses"> &raquo; Submarine Losses (Ger)</li>\n\t</ul>\n-->\n</div>\n\n<div id="content-right">\n\t<div id="graph-plot"></div>\n</div>');
       
       }).call(this);
       
@@ -3364,7 +3359,9 @@ window.require.register("views/worldmap_view", function(exports, require, module
   
         if(startDate){
   
+  
           // render object on map
+          /*
           var fleetImage = $this.plot.append('image')
             .attr("xlink:href", "img/units/heavy_cruiser.svg")
             .attr("x", positions[1][0])
@@ -3373,6 +3370,7 @@ window.require.register("views/worldmap_view", function(exports, require, module
             .attr("height", 17);
   
           $this.fleetImages.push(fleetImage);
+          */
         }
   
       });

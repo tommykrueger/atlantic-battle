@@ -81,8 +81,6 @@ module.exports = View.extend({
     this.gameIntervalFunction = function(){
       $this.gameLoop();
       $this.count++;
-
-      console.log('rendering game loop');
     };
 
     this.gameLoopInterval = setInterval(this.gameIntervalFunction, 1000);
@@ -105,9 +103,6 @@ module.exports = View.extend({
   },
 
   displayDate: function(){
-
-    //console.log('render before');
-
 
     var newDate = this.new_date.getDate() < 9 ? '0' + this.new_date.getDate() : this.new_date.getDate();
     var newHour = this.new_date.getHours() < 9 ? '0' + this.new_date.getHours() : this.new_date.getHours();

@@ -183,7 +183,9 @@ module.exports = View.extend({
 
       if(startDate){
 
+
         // render object on map
+        /*
         var fleetImage = $this.plot.append('image')
           .attr("xlink:href", "img/units/heavy_cruiser.svg")
           .attr("x", positions[1][0])
@@ -192,6 +194,7 @@ module.exports = View.extend({
           .attr("height", 17);
 
         $this.fleetImages.push(fleetImage);
+        */
       }
 
     });

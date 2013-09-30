@@ -1,4 +1,4 @@
-# Brunch with js
+# Atlantic Battle
 
 A simple simulation of the atlantic battle.
 
