@@ -1,14 +1,17 @@
 var application = require('application');
 
 // models
+var Factions = require('models/factions');
 var Countries = require('models/countries');
 var Provinces = require('models/provinces');
 var Borders = require('models/borders');
 var Locations = require('models/locations');
 var Events = require('models/events');
 var Fleets = require('models/fleets');
-var SunkenShips = require('models/sunken_ships');
+var ConvoyRoutes = require('models/convoy_routes');
+var Ships = require('models/ships');
 var SubmarineZones = require('models/submarine_zones');
+var AlliedAirZones = require('models/allied_air_zones');
 var Game = require('views/game_view');
 
 // views
@@ -32,7 +35,7 @@ module.exports = Backbone.Router.extend({
   worldmap: function() {
   	$('body').empty();
 
-    // add fix for the html body
+    // add fix for the html body if we are in worldmap view
     $('body').css({'overflow': 'hidden'});
 
     var countries = new Countries();
@@ -49,8 +52,11 @@ module.exports = Backbone.Router.extend({
     var locations = new Locations();
     var fleets = new Fleets();
     var gameEvents = new Events();
-    var sunkenShips = new SunkenShips();
+    var ships = new Ships();
     var submarineZones = new SubmarineZones();
+    var alliedAirZones = new AlliedAirZones();
+    var convoyRoutes = new ConvoyRoutes();
+    var factions = new Factions();
 
     $.when(
       
@@ -59,8 +65,11 @@ module.exports = Backbone.Router.extend({
       locations.fetch(),
       fleets.fetch(),
       gameEvents.fetch(),
-      sunkenShips.fetch(),
-      submarineZones.fetch()
+      ships.fetch(),
+      submarineZones.fetch(),
+      alliedAirZones.fetch(),
+      convoyRoutes.fetch(),
+      factions.fetch()
 
       ).done(function(){
 
@@ -69,7 +78,9 @@ module.exports = Backbone.Router.extend({
         borders: borders, 
         locations: locations,
         fleets: fleets,
-        submarineZones: submarineZones
+        submarineZones: submarineZones,
+        alliedAirZones: alliedAirZones,
+        convoyRoutes: convoyRoutes
       });
     
       $('body').append(worldmap.render().el);
@@ -79,7 +90,8 @@ module.exports = Backbone.Router.extend({
         worldmap: worldmap,
         gameEvents: gameEvents,
         fleets: fleets,
-        sunkenShips: sunkenShips        
+        ships: ships,
+        factions: factions        
       });
 
       game.beforeRender();
@@ -89,9 +101,9 @@ module.exports = Backbone.Router.extend({
         
       var dialog = new Dialog({
         game: game,
-        headline: 'Welcome', 
-        description: 'You are in command of our glorious fleet. It\'s your task to command our chips and submarines to strike out Britain from war', 
-        submit: 'Start Game'
+        headline: 'Willkommen', 
+        description: ' Hier sehen Sie eine interaktive Simulation der Atlantikschlacht des Zweiten Weltkrieges. \n\nBenutzen Sie die Icons oben, um nähere Informationen und Statistiken zu sehen. Mithilfe der Filterfunktionen am unteren Bildschirmrand können Sie zudem bestimmte Funktionen der Kartenansicht ein- und ausblenden.', 
+        submit: 'Starten'
       });
 
       $('body').append(dialog.render().el);

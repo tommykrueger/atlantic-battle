@@ -1,0 +1,32 @@
+<li id="ship-<%= @id%>">
+  <table cellspacing="0" cellpadding="0">
+    <tr>
+      <td class="label">Date</td>
+      <td><%= @sunk_date%></td>
+    </tr>
+    <tr>
+      <td class="label">Name</td>
+      <td><%= @name%></td>
+    </tr>
+    <tr>
+      <td class="label">Type</td>
+      <td><%= @ship_type%> (<%= @ship_class%>)</td>
+    </tr>
+    <tr>
+      <td class="label">Country</td>
+      <td><%= @country%></td>
+    </tr>
+    <tr>
+      <td class="label">Report</td>
+      <td><%= @sunk_report%></td>
+    </tr>
+    <tr>
+      <td class="label">Losses</td>
+      <td><%= @seamen_losses%> men</td>
+    </tr>
+  </table>
+
+  <% if @source : %>
+  <img src="<%= @source%>" class="ship-source "/>
+  <% end %>
+</li>

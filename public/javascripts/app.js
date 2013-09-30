@@ -167,14 +167,17 @@ window.require.register("lib/router", function(exports, require, module) {
   var application = require('application');
 
   // models
+  var Factions = require('models/factions');
   var Countries = require('models/countries');
   var Provinces = require('models/provinces');
   var Borders = require('models/borders');
   var Locations = require('models/locations');
   var Events = require('models/events');
   var Fleets = require('models/fleets');
-  var SunkenShips = require('models/sunken_ships');
+  var ConvoyRoutes = require('models/convoy_routes');
+  var Ships = require('models/ships');
   var SubmarineZones = require('models/submarine_zones');
+  var AlliedAirZones = require('models/allied_air_zones');
   var Game = require('views/game_view');
 
   // views
@@ -198,7 +201,7 @@ window.require.register("lib/router", function(exports, require, module) {
     worldmap: function() {
     	$('body').empty();
 
-      // add fix for the html body
+      // add fix for the html body if we are in worldmap view
       $('body').css({'overflow': 'hidden'});
 
       var countries = new Countries();
@@ -215,8 +218,11 @@ window.require.register("lib/router", function(exports, require, module) {
       var locations = new Locations();
       var fleets = new Fleets();
       var gameEvents = new Events();
-      var sunkenShips = new SunkenShips();
+      var ships = new Ships();
       var submarineZones = new SubmarineZones();
+      var alliedAirZones = new AlliedAirZones();
+      var convoyRoutes = new ConvoyRoutes();
+      var factions = new Factions();
 
       $.when(
         
@@ -225,8 +231,11 @@ window.require.register("lib/router", function(exports, require, module) {
         locations.fetch(),
         fleets.fetch(),
         gameEvents.fetch(),
-        sunkenShips.fetch(),
-        submarineZones.fetch()
+        ships.fetch(),
+        submarineZones.fetch(),
+        alliedAirZones.fetch(),
+        convoyRoutes.fetch(),
+        factions.fetch()
 
         ).done(function(){
 
@@ -235,7 +244,9 @@ window.require.register("lib/router", function(exports, require, module) {
           borders: borders, 
           locations: locations,
           fleets: fleets,
-          submarineZones: submarineZones
+          submarineZones: submarineZones,
+          alliedAirZones: alliedAirZones,
+          convoyRoutes: convoyRoutes
         });
       
         $('body').append(worldmap.render().el);
@@ -245,7 +256,8 @@ window.require.register("lib/router", function(exports, require, module) {
           worldmap: worldmap,
           gameEvents: gameEvents,
           fleets: fleets,
-          sunkenShips: sunkenShips        
+          ships: ships,
+          factions: factions        
         });
 
         game.beforeRender();
@@ -255,9 +267,9 @@ window.require.register("lib/router", function(exports, require, module) {
           
         var dialog = new Dialog({
           game: game,
-          headline: 'Welcome', 
-          description: 'You are in command of our glorious fleet. It\'s your task to command our chips and submarines to strike out Britain from war', 
-          submit: 'Start Game'
+          headline: 'Willkommen', 
+          description: ' Hier sehen Sie eine interaktive Simulation der Atlantikschlacht des Zweiten Weltkrieges. \n\nBenutzen Sie die Icons oben, um nähere Informationen und Statistiken zu sehen. Mithilfe der Filterfunktionen am unteren Bildschirmrand können Sie zudem bestimmte Funktionen der Kartenansicht ein- und ausblenden.', 
+          submit: 'Starten'
         });
 
         $('body').append(dialog.render().el);
@@ -272,6 +284,36 @@ window.require.register("lib/router", function(exports, require, module) {
 window.require.register("lib/view_helper", function(exports, require, module) {
   // Put your handlebars.js helpers here.
   
+});
+window.require.register("models/allied_air_zone", function(exports, require, module) {
+  var Model = require('./model');
+  
+  module.exports = Model.extend({
+  	
+  	defaults: {
+  
+  		id: null,
+  		name: ''
+  	},
+  
+  	intitialize : function(values){
+  		Model.prototype.initialize.call(this, values);
+  	}
+  
+  });
+});
+window.require.register("models/allied_air_zones", function(exports, require, module) {
+  var AlliedAirZone = require('./allied_air_zone');
+  var Collection = require('./collection');
+  
+  module.exports = Collection.extend({
+    model: AlliedAirZone,
+    url: './js/data/allied_air_zones.json',
+  
+    initialize: function() {
+      console.log('Air Zones loaded!');
+    }
+  });
 });
 window.require.register("models/app_interface", function(exports, require, module) {
   var Model = require('./model');
@@ -321,6 +363,36 @@ window.require.register("models/collection", function(exports, require, module) 
   	
   });
   
+});
+window.require.register("models/convoy_route", function(exports, require, module) {
+  var Model = require('./model');
+  
+  module.exports = Model.extend({
+  	
+  	defaults: {
+  
+  		id: null,
+  		name: ''
+  	},
+  
+  	intitialize : function(values){
+  		Model.prototype.initialize.call(this, values);
+  	}
+  
+  });
+});
+window.require.register("models/convoy_routes", function(exports, require, module) {
+  var ConvoyRoute = require('./convoy_route');
+  var Collection = require('./collection');
+  
+  module.exports = Collection.extend({
+    model: ConvoyRoute,
+    url: './js/data/convoy_routes.json',
+  
+    initialize: function() {
+      console.log('Convoy Routes loaded!');
+    }
+  });
 });
 window.require.register("models/countries", function(exports, require, module) {
   var Country = require('./country');
@@ -384,6 +456,35 @@ window.require.register("models/events", function(exports, require, module) {
   
     initialize: function() {
       console.log('Events loaded!');
+    }
+  });
+});
+window.require.register("models/faction", function(exports, require, module) {
+  var Model = require('./model');
+  
+  module.exports = Model.extend({
+  	
+  	defaults: {
+  		id: null,
+  		name: ''
+  	},
+  
+  	intitialize : function(values){
+  		Model.prototype.initialize.call(this, values);
+  	}
+  
+  });
+});
+window.require.register("models/factions", function(exports, require, module) {
+  var Faction = require('./faction');
+  var Collection = require('./collection');
+  
+  module.exports = Collection.extend({
+    model: Faction,
+    url: './js/data/faction_areas.json',
+  
+    initialize: function() {
+      console.log('Factions loaded!');
     }
   });
 });
@@ -612,6 +713,37 @@ window.require.register("models/provinces", function(exports, require, module) {
     }
   });
 });
+window.require.register("models/ship", function(exports, require, module) {
+  var Model = require('./model');
+  
+  module.exports = Model.extend({
+  	
+  	defaults: {
+  
+  		id: null,
+  		name: ''
+  
+  	},
+  
+  	intitialize : function(values){
+  		Model.prototype.initialize.call(this, values);
+  	}
+  
+  });
+});
+window.require.register("models/ships", function(exports, require, module) {
+  var Ship = require('./ship');
+  var Collection = require('./collection');
+  
+  module.exports = Collection.extend({
+    model: Ship,
+    url: './js/data/ships.json',
+  
+    initialize: function() {
+      console.log('Ships loaded!');
+    }
+  });
+});
 window.require.register("models/submarine_zone", function(exports, require, module) {
   var Model = require('./model');
   
@@ -643,37 +775,6 @@ window.require.register("models/submarine_zones", function(exports, require, mod
     }
   });
 });
-window.require.register("models/sunken_ship", function(exports, require, module) {
-  var Model = require('./model');
-  
-  module.exports = Model.extend({
-  	
-  	defaults: {
-  
-  		id: null,
-  		name: ''
-  
-  	},
-  
-  	intitialize : function(values){
-  		Model.prototype.initialize.call(this, values);
-  	}
-  
-  });
-});
-window.require.register("models/sunken_ships", function(exports, require, module) {
-  var SunkenShip = require('./sunken_ship');
-  var Collection = require('./collection');
-  
-  module.exports = Collection.extend({
-    model: SunkenShip,
-    url: './js/data/sunken_ships.json',
-  
-    initialize: function() {
-      console.log('Sunken Ships loaded!');
-    }
-  });
-});
 window.require.register("models/units", function(exports, require, module) {
   module.exports = Backbone.Model.extend({
    
@@ -685,9 +786,425 @@ window.require.register("models/worldmap", function(exports, require, module) {
   });
   
 });
+window.require.register("views/context_diplomacy_view", function(exports, require, module) {
+  var View = require('./view');
+  
+  module.exports = View.extend({
+    id: 'feedback',
+    template: require('./templates/context_diplomacy'),
+  
+   	events: {
+  
+    },
+  
+    initialize: function(options){
+  
+  	},
+  
+  });
+  
+});
+window.require.register("views/context_events_view", function(exports, require, module) {
+  var View = require('./view');
+  
+  module.exports = View.extend({
+    id: 'feedback',
+    template: require('./templates/context_events'),
+  
+   	events: {
+  
+    },
+  
+    initialize: function(options){
+  
+  	},
+  
+  });
+  
+});
+window.require.register("views/context_feedback_view", function(exports, require, module) {
+  var View = require('./view');
+  
+  module.exports = View.extend({
+    id: 'feedback',
+    template: require('./templates/context_feedback'),
+  
+   	events: {
+      'click #submit-btn': 'submitForm'
+    },
+  
+    initialize: function(options){
+  		_.bindAll(this, 'submitForm');
+  		console.log('render feedback view');
+  	},
+  
+  	submitForm: function(event){
+  		event.preventDefault();
+  
+  		var formData = $('#feedback-form').serialize();
+  
+  		$('#form-process').text('Sending... ').fadeIn(250);
+  
+  		$.ajax({
+  		  //url: 'http://localhost/atlantic-battle/server/backend/events/send_email',
+  		  url: 'http://tommykrueger.com/projects/atlantic-battle/server/backend/events/send_email',
+  		  type: 'POST',
+  		  data: formData,
+  		  success: function(data) {
+  				$('#form-process').text(data).delay(2500).fadeOut(250);
+        }
+  		});
+  	}
+  
+  });
+  
+});
+window.require.register("views/context_statistics_view", function(exports, require, module) {
+  var View = require('./view');
+  
+  module.exports = View.extend({
+    id: 'statistics',
+    template: require('./templates/context_statistics'),
+  
+   	events: {
+      'click #statistics-menu li': 'switchStatistic'
+    },
+  
+    initialize: function(options){
+  		//this.worldmap = this.options.worldmap;
+  
+  		this.plot = '#graph-plot';
+  		this.SVGplot;
+  
+  		// 1. submarines / destroyers
+  
+  		this.data = [
+  			{
+  				'1938': [23],
+  				'1939': [34],
+  				'1940': [46],
+  				'1941': [78]
+  				
+  			},
+  			{
+  				'1938': [7],
+  				'1939': [12],
+  				'1940': [13],
+  				'1941': [25]
+  			}
+  		];
+  
+  
+  		this.sunkSubs = [
+  			[1939, 9],
+  			[1940, 23],
+  			[1941, 35],
+  			[1942, 86],
+  			[1943, 236],
+  			[1944, 235],
+  			[1945, 122]
+  		];
+  
+  		// sunk ships in the atlantic
+  		// year / sunk ships / sunk ships by submarines / sunk germany submarines
+  
+  		// source http://www.world-war-2.info/statistics/
+  		this.sunkShips = [
+  			[1939, 222, 114, 9],
+  			[1940, 1059, 471, 23],
+  			[1941, 1299, 432, 35],
+  			[1942, 1664, 1160, 86],
+  			[1943, 597, 377, 236],
+  			[1944, 205, 132, 235],
+  			[1945, 104, 56, 122]
+  		];
+  
+  		console.log('loading statistics view');
+  		_.bindAll(this, 'afterRender', 'switchStatistic', 'renderSubmarineLosses', 'renderStatisticPlot');
+  	},
+  
+  	afterRender: function(){
+  		this.renderStatisticPlot();
+  	},
+  
+  	// render the D3 graph plot
+  	switchStatistic: function(event){
+  		var currentStatistic = $(event.target).attr('id');
+  
+  		console.log(currentStatistic);
+  
+  		switch(currentStatistic){
+  			case 'submarine-losses':
+  				this.renderSubmarineLosses();
+  				break;
+  		}
+  	},
+  
+  	renderSubmarineLosses: function(){
+  		var $this = this;
+  
+  		$('#graph-plot').empty();
+  		$('#plot').empty();
+  
+  		d3.csv('data/submarine-losses.csv', function(data) {
+  		  //data = JSON.stringify(data);
+  
+  		  var h = 400;
+  
+  		  $this.SVGplot = d3.select('#plot')
+  				.append('svg')
+  				.attr('width', 720)
+  				.attr('height', 520)
+  					.append('g')
+  					.attr('transform', 'translate(48,48)');
+  
+  			var x = d3.scale.linear().domain([1939, 1945]).range([0, 580]);
+  			var y = d3.scale.linear().domain([0, 50]).range([400, 0]);
+  
+  			var xAxis = d3.svg.axis()
+  				.scale(x)
+  				.orient('bottom')
+  				.ticks(7)
+  				.tickFormat(d3.format('.0f'));
+  
+  			var yAxis = d3.svg.axis()
+  				.scale(y)
+  				.orient('left')
+  				.ticks(10);
+  
+  			y.domain([0, d3.max(data, function(d){ return d['Ships']; })]);
+  
+  
+  			$this.SVGplot.append('g')
+  				.attr('class', 'x axis')
+  				.attr('transform', 'translate(48, 424)')
+  				.call(xAxis);
+  
+  			$this.SVGplot.append('g')
+  				.attr('class', 'y axis')
+  				.attr('transform', 'translate(24, 0)')
+  				.call(yAxis)
+  					.append('text')
+  					.attr('transform', 'translate(-64, 0) rotate(-90)')
+  					.attr('y', 6)
+  					.attr('dy', '.71em')
+  					.style('text-anchor', 'end')
+  					.text('Sunk Ships per year (Atlantic)');
+  
+  			$this.SVGplot.selectAll('rect')
+       		.data(data)
+     			.enter()
+     				.append('rect')
+     				.attr('fill', 'steelblue')
+       			.attr('x', function(d, i) { 
+       				console.log(d);
+       				return x(d.year); 
+       			})
+       			.attr('y', function(d) { 
+       				return h - y(d['Ships']) - .5;
+       			})
+       			.attr('width', 24)
+       			.attr('height', function(d) {
+       				return y(d['Ships']); 
+       			});
+  
+  			$this.$('#graph-plot').html( $('#plot').html() );
+  
+  		});
+  	},
+  
+  	renderStatisticPlot: function(){
+  
+  		console.log('rendering plot');
+  		$('#graph-plot').empty();
+  		$('#plot').empty();
+  
+  		this.SVGplot = d3.select('#plot')
+  			.append('svg')
+  			.attr('width', 720)
+  			.attr('height', 520)
+  				.append('g')
+  				.attr('transform', 'translate(48,48)');
+  
+  		var x = d3.scale.linear().domain([1939, 1945]).range([0, 580]);
+  		var y = d3.scale.linear().domain([0, 50]).range([400, 0]);
+  
+  		var xAxis = d3.svg.axis()
+  			.scale(x)
+  			.orient('bottom')
+  			.ticks(7)
+  			.tickFormat(d3.format('.0f'));
+  
+  		var yAxis = d3.svg.axis()
+  			.scale(y)
+  			.orient('left')
+  			.ticks(12);
+  
+  		var line = d3.svg.line()
+  			.interpolate('cardinal')
+  			.x(function(d) { return x(d[0]); })
+  			.y(function(d) { return y(d[1]); });
+  
+  		var lineSubs = d3.svg.line()
+  			.interpolate('cardinal')
+  			.x(function(d) { return x(d[0]); })
+  			.y(function(d) { return y(d[2]); });
+  
+  		var lineSubsSunk = d3.svg.line()
+  			.interpolate('cardinal')
+  			.x(function(d) { return x(d[0]); })
+  			.y(function(d) { return y(d[3]); });
+  
+  		//x.domain(d3.extent(this.sunkShips, function(d) { return d[0]; }));
+  		y.domain([0, d3.max(this.sunkShips, function(d) { return d[1]; })]);
+  
+  		this.SVGplot.append('g')
+  				.attr('class', 'x axis')
+  				.attr('transform', 'translate(48, 424)')
+  				.call(xAxis);
+  
+  		this.SVGplot.append('g')
+  				.attr('class', 'y axis')
+  				.attr('transform', 'translate(24, 0)')
+  				.call(yAxis)
+  					.append('text')
+  					.attr('transform', 'translate(-64, 0) rotate(-90)')
+  					.attr('y', 6)
+  					.attr('dy', '.71em')
+  					.style('text-anchor', 'end')
+  					.text('Sunk Ships per year (Atlantic)');
+  
+  		var graph = this.SVGplot.selectAll('.line-graph')
+  				.data(this.sunkShips[0])
+  				.enter()
+  				.append('g')
+  				.attr('class', 'sunk-line-graph');
+  
+  		graph.append('path')
+  				.attr('class', 'line sunk-ships-line')
+  				.attr('transform', 'translate(48,0)')
+  				.attr('d', line(this.sunkShips));
+  
+  		graph.append('path')
+  			.attr('class', 'line sunk-ships-submarine-line')
+  			.attr('transform', 'translate(48,0)')
+  			.attr('d', lineSubs(this.sunkShips));
+  
+  		graph.append('path')
+  			.attr('class', 'line sunk-submarines-line')
+  			.attr('transform', 'translate(48,0)')
+  			.attr('d', lineSubsSunk(this.sunkShips));
+  
+  
+  		// add the dots
+  		graph
+  			.append('g')
+  			.attr('class', 'circles')
+  			.attr('transform', 'translate(48,0)')
+  			.selectAll('circle')
+  			.data( this.sunkShips )
+  			.enter()
+  			.append('circle')
+  				.attr('class', 'amount amount-sunk-ships')
+  				.attr('r', 4)
+  				.attr('cx', function(d){
+  					return x(d[0]);
+  				})
+  				.attr('cy', function(d){
+  					return y(d[1]);
+  				});
+  
+  		graph
+  			.append('g')
+  			.attr('class', 'circles')
+  			.attr('transform', 'translate(48,0)')
+  			.selectAll('circle')
+  			.data( this.sunkShips )
+  			.enter()
+  			.append('circle')
+  				.attr('class', 'amount amount-sunk-ships-submarine')
+  				.attr('r', 4)
+  				.attr('cx', function(d){
+  					return x(d[0]);
+  				})
+  				.attr('cy', function(d){
+  					return y(d[2]);
+  				});
+  
+  		graph
+  			.append('g')
+  			.attr('class', 'circles')
+  			.attr('transform', 'translate(48,0)')
+  			.selectAll('circle')
+  			.data( this.sunkShips )
+  			.enter()
+  			.append('circle')
+  				.attr('class', 'amount amount-sunk-submarines')
+  				.attr('r', 4)
+  				.attr('cx', function(d){
+  					return x(d[0]);
+  				})
+  				.attr('cy', function(d){
+  					return y(d[3]);
+  				});
+  
+  
+  
+  		var labels = this.SVGplot
+  			.append('g')
+  			.attr('class', 'labels')
+  			.attr('transform', 'translate(460, 48)');
+  
+  			labels
+  				.append('text')
+  					.text('Total ships losses (Allies)')
+  					.attr('fill', 'steelblue');
+  
+  			labels
+  				.append('text')	
+  					.text('Ship losses by submarines (Allies)')
+  					.attr('fill', 'red')
+  					.attr('transform', 'translate(0, 24)');
+  
+  			labels
+  				.append('text')	
+  					.text('Submarine losses (Axis)')
+  					.attr('fill', 'green')
+  					.attr('transform', 'translate(0, 48)');
+  
+  
+  		this.$('#graph-plot').html( $('#plot').html() );
+  
+  	}
+  
+  });
+  
+});
+window.require.register("views/context_units_view", function(exports, require, module) {
+  var View = require('./view');
+  
+  module.exports = View.extend({
+    id: 'feedback',
+    template: require('./templates/context_units'),
+  
+   	events: {
+  
+    },
+  
+    initialize: function(options){
+  
+  	},
+  
+  });
+  
+});
 window.require.register("views/context_view", function(exports, require, module) {
   var View = require('./view');
-  var StatisticsView = require('./statistics_view');
+  var ContextUnitsView = require('./context_units_view');
+  var ContextEventsView = require('./context_events_view');
+  var ContextDiplomacyView = require('./context_diplomacy_view');
+  var ContextStatisticsView = require('./context_statistics_view');
+  var ContextFeedbackView = require('./context_feedback_view');
   
   module.exports = View.extend({
     id: 'context-view',
@@ -701,8 +1218,6 @@ window.require.register("views/context_view", function(exports, require, module)
   		this.context = this.options.context;
   		this.worldmap = this.options.worldmap;
   
-  		console.log('Context view loaded');
-  
   		_.bindAll(this, 'setContext', 'render', 'afterRender', 'close');
   	},
   
@@ -712,23 +1227,40 @@ window.require.register("views/context_view", function(exports, require, module)
   
   	setContext: function(){
   		var $this = this;
+  
   		switch(this.context){
+  			case 'units':
+  
+  				var contextUnitsView = new ContextUnitsView();
+  				$this.$('#context-content').html(contextUnitsView.render().el);
+  			break;
+  			case 'events':
+  
+  				var contextEventsView = new ContextEventsView();
+  				$this.$('#context-content').html(contextEventsView.render().el);
+  			break;
+  			case 'diplomacy':
+  
+  				var contextDiplomacyView = new ContextDiplomacyView();
+  				$this.$('#context-content').html(contextDiplomacyView.render().el);
+  			break;
+  			case 'feedback':
+  
+  				var contextFeedbackView = new ContextFeedbackView();
+  				$this.$('#context-content').html(contextFeedbackView.render().el);
+  			break;
   			case 'statistics':
   
-  				var statisticsView = new StatisticsView();
-  					$this.$('#context-content').html(statisticsView.render().el);
+  				var contextStatisticsView = new ContextStatisticsView();
+  				$this.$('#context-content').html(contextStatisticsView.render().el);
   			break;
   		}
   	},
   
   	close: function(event){
   		var $this = this;
-  
-  		//$this.$el.fadeOut(250, function(){
-  			$this.destroy();
-  		//});
+  		$this.destroy();
   	}
-  
   });
   
 });
@@ -812,14 +1344,13 @@ window.require.register("views/event_view", function(exports, require, module) {
   
    	events: {
       'click .close-btn': 'closeEvent',
-      'click .show-on-map-btn': 'showOnMap'
+      'click .event': 'showOnMap',
+      'mouseenter .event': 'markOnMap'
     },
   
     initialize: function(options){
   		this.model = this.options.gameEvent;
   		this.worldmap = this.options.worldmap;
-  
-  		console.log('Event view loaded');
   
   		/*
   		this.date = this.model.attributes.date;
@@ -834,7 +1365,7 @@ window.require.register("views/event_view", function(exports, require, module) {
   		this.model.attributes.date = this.date.getDate();
   		*/
   
-  		_.bindAll(this, 'render', 'afterRender', 'closeEvent', 'showOnMap');
+  		_.bindAll(this, 'render', 'afterRender', 'closeEvent', 'showOnMap', 'markOnMap');
   	},
   
   	render: function(){
@@ -851,20 +1382,17 @@ window.require.register("views/event_view", function(exports, require, module) {
   		// add event listener by jQuery due to backbone issue
   		_.defer(function(){
   
-  			$('.show-on-map-btn').on('click', function(e){
+  			$('.show-on-map-btn, .event').on('click', function(e){
   				var x = $(this).attr('x');
   				var y = $(this).attr('y');
   
   				$this.worldmap.moveTo(x, y); 
   			});
-  
-  
   		});
   	},
   
   	closeEvent: function(event){
   		var $this = this;
-  		console.log('closing event');
   
   		$this.$el.fadeOut(250, function(){
   			$this.destroy();
@@ -873,7 +1401,89 @@ window.require.register("views/event_view", function(exports, require, module) {
   
   	showOnMap: function(event){
   		console.log('moving map');
+  	},
+  
+  	markOnMap: function(event){
+  
+  		this.worldmap.markPosition(
+  			$(event.target).attr('x'),
+  			$(event.target).attr('y')
+  		); 
   	}
+  
+  });
+  
+});
+window.require.register("views/faction_view", function(exports, require, module) {
+  var View = require('./view');
+  
+  module.exports = View.extend({
+    className : 'faction',
+    template: require('./templates/faction'),
+  
+   	events: {
+      'mouseenter': 'showInfo',
+      'click path.ship': 'showInfo'
+    },
+  
+    initialize: function(options){
+  		this.model = this.options.factionPath;
+  
+  		_.bindAll(this, 'showInfo', 'hideInfo');
+  	},
+  
+  	render: function(){
+  		var $this = this;
+  	 
+      // append the faction path to the map
+  		var g = d3.select('.factions')
+        .append('path')
+        .attr('id', 'faction-path-' + $this.model.get('id'))
+        .attr('d', $this.model.get('d'))
+        .attr('class', 'faction-path ' + $this.model.get('faction') )
+        .attr('title', $this.model.get('name'))
+        .attr('rel', 'faction-path-' + $this.model.get('id')) 
+        .attr('faction', $this.model.get('faction')) 
+        .on('mouseenter', $this.mouseenter)
+        .on('mouseout', $this.mouseout)
+        .on('mousemove', $this.mousemove);
+  	},
+  
+  	mouseenter: function(elem){
+      var factionName = d3.select(this).attr('faction');
+  
+      $('#tooltip #tooltip-content').html( factionName.toUpperCase() + ' Faction Border' );
+  
+      $('#tooltip').css({
+        'left': d3.event.pageX + 24,
+        'top': d3.event.pageY + 24
+      });
+      $('#tooltip').stop().fadeIn(24);
+    },
+  
+    mouseout: function(elem){
+      $('#tooltip').stop().fadeOut(24);
+    },
+  
+    mousemove: function(elem){
+      $('#tooltip').css({
+        'left': d3.event.pageX + 24,
+        'top': d3.event.pageY + 24
+      });
+    },
+  
+  	showInfo: function(){
+  		console.log('showing info');
+  		var $this = this;
+  
+  		var tooltip = new TooltipView({ data: $this.model, SVGObject: $this });
+  				tooltip.render();
+  	},
+  
+  	hideInfo: function(){
+  		console.log('hiding info');
+  	}
+  
   
   });
   
@@ -910,8 +1520,9 @@ window.require.register("views/fleet_view", function(exports, require, module) {
 });
 window.require.register("views/game_view", function(exports, require, module) {
   var View = require('./view');
-  var SunkenShipView = require('./sunken_ship_view');
+  var ShipView = require('./ship_view');
   var EventView = require('./event_view');
+  var FactionView = require('./faction_view');
 
   module.exports = View.extend({
     id : 'game',
@@ -921,14 +1532,19 @@ window.require.register("views/game_view", function(exports, require, module) {
     },
 
     initialize: function(options){
-      this.gameLoopInterval = '';
+      this.gameLoopInterval = null;
+      this.gameIntervalFunction = null;
       this.count = 0;
 
       this.worldmap = this.options.worldmap;
 
       this.gameEvents = this.options.gameEvents;
       this.fleets = this.options.fleets;
-      this.sunkenShips = this.options.sunkenShips;
+      this.ships = this.options.ships;
+      this.factions = this.options.factions;
+
+      // holds the faction path that where already rendered
+      this.renderedFactions = [];
 
       // add second is one day in game
       this.intervalTime = (24 * 60 * 60 * 1000); // hours/minutes/seconds/milliseconds
@@ -936,6 +1552,7 @@ window.require.register("views/game_view", function(exports, require, module) {
       //this.intervalTime = (60 * 60 * 1000); // minutes/seconds/milliseconds
 
       this.start_date = new Date(1939, 8, 1);
+      //this.start_date = new Date(1940, 3, 1);
       this.end_date = new Date(1945, 4, 8);
       this.new_date = new Date(this.start_date.getTime() + (this.count * this.intervalTime));
 
@@ -965,21 +1582,33 @@ window.require.register("views/game_view", function(exports, require, module) {
       ];
 
       
-      _.bindAll(this, 'renderSubmarineZones', 'renderEvents', 'renderFleets', 'renderSunkenShips', 'displayDate', 'gameLoop', 'toggleGameLoop', 'beforeRender');
+      _.bindAll(this, 
+        'renderSubmarineZones', 
+        'renderEvents', 
+        'renderFleets', 
+        'renderShips', 
+        'renderFactions', 
+        'displayDate', 
+        'gameLoop', 
+        'toggleGameLoop', 
+        'beforeRender');
+
       this.displayDate();
     },
 
     render: function(){
 
       var $this = this;
-      this.gameLoopInterval = setInterval(function(){
+      this.gameIntervalFunction = function(){
         $this.gameLoop();
         $this.count++;
-        //console.log($this.count);
-      }, 1000);
+
+        console.log('rendering game loop');
+      };
+
+      this.gameLoopInterval = setInterval(this.gameIntervalFunction, 1000);
 
       return $this.$el;
-
     },
 
     // The loop that will be called on every game tick
@@ -991,8 +1620,9 @@ window.require.register("views/game_view", function(exports, require, module) {
 
       this.renderFleets();
       this.renderEvents();
-      this.renderSunkenShips();
+      this.renderShips();
       this.renderSubmarineZones();
+      this.renderFactions();
     },
 
     displayDate: function(){
@@ -1059,13 +1689,13 @@ window.require.register("views/game_view", function(exports, require, module) {
       });
     },
 
-    renderSunkenShips: function(){
+    renderShips: function(){
       var $this = this;
 
       var gameTime = $this.new_date.getTime();
 
-       _.each(this.sunkenShips.models, function(ship, idx){
-        var shipSunkDate = ship.get('date');
+       _.each(this.ships.models, function(ship, idx){
+        var shipSunkDate = ship.get('sunk_date');
         var date = shipSunkDate.split('-');
         var dateObj = new Date(date[0], date[1]-1, date[2]);
 
@@ -1074,11 +1704,25 @@ window.require.register("views/game_view", function(exports, require, module) {
         
         if($this.dayDifference(dateObj, $this.new_date) == 0){
 
-          var sunkenShipView = new SunkenShipView({ship: ship}); 
-              sunkenShipView.render();
-              sunkenShipView.initialize();
+          var shipView = new ShipView({
+                ship: ship,
+                worldmap: $this.worldmap
+              }); 
+
+              shipView.render();
+              shipView.initialize();
+
+          // add element to the dom as html
+          var $li = $('<li id="ship-'+ ship.get('id') +'"></li>');
+
+          $li.append( '<span class="ship-date">'+ ship.get('sunk_date') +'</span>' );
+          $li.append( '<span class="ship-country">'+ ship.get('country') +'</span>' );
+          $li.append( '<span class="ship-report">'+ ship.get('sunk_report') +'</span>' );
+
+          $('#ship-list').append( $li );
         }
 
+        
       });
     },
 
@@ -1108,6 +1752,39 @@ window.require.register("views/game_view", function(exports, require, module) {
             .classed('inactive', true);
         }
 
+      });
+    },
+
+    renderFactions: function(){
+      var $this = this; 
+   
+      var gameTime = $this.new_date.getTime();
+
+      _.each($this.factions.models, function(factionPath, idx){
+
+        var startDate = factionPath.get('start_date').split('-');
+        var startDateObj = new Date(startDate[1], startDate[2]-1, startDate[3]);
+
+        var endDate = factionPath.get('end_date').split('-');
+        var endDateObj = new Date(endDate[1], endDate[2]-1, endDate[3]);
+
+
+        // activate if date is reached
+        if($this.dayDifference(startDateObj, $this.new_date) <= 0){
+
+          if( $this.renderedFactions.indexOf( factionPath.get('id') ) == -1) {
+
+            var factionView = new FactionView({factionPath: factionPath}); 
+                factionView.render();
+                factionView.initialize();
+
+            $this.renderedFactions.push( factionPath.get('id') );
+          }
+        }
+
+        if($this.dayDifference(endDateObj, $this.new_date) <= 0){
+          d3.select( '#faction-path-' + factionPath.get('id') ).remove();
+        }
       });
     },
 
@@ -1163,14 +1840,15 @@ window.require.register("views/interface_view", function(exports, require, modul
   		'click a.ship-link': 'openShipDialog',
   		'click #mainmenu li': 'showScreen',
   
-  		'click #filter-list li a': 'filterMap',
+  		'click #filter-list li': 'filterMap',
+  		'click #pause-btn': 'pauseGame'
     },
   
     initialize: function(options){
   		this.game = this.options.game;
   		this.worldmap = this.options.worldmap;
   
-  		_.bindAll(this, 'showScreen');
+  		_.bindAll(this, 'showScreen', 'pauseGame');
   
   		/*
   		this.ship_types = [
@@ -1182,7 +1860,6 @@ window.require.register("views/interface_view", function(exports, require, modul
   
   	openShipDialog: function(event){
   		event.preventDefault();
-  		console.log(event);
   	},
   
   	closeProvinceView: function(){
@@ -1210,8 +1887,8 @@ window.require.register("views/interface_view", function(exports, require, modul
   	filterMap: function(e){
   		e.preventDefault();
   
-  		var filterItem = $(e.target).parent();
-  		var filter = filterItem.attr('id');
+  		var $el = $(e.target);
+  		var filter = $el.attr('id');
   
   		switch(filter){
   			case 'filter-borders':
@@ -1219,6 +1896,47 @@ window.require.register("views/interface_view", function(exports, require, modul
   				d3.selectAll('.borders').classed('hidden');
   				break;
   
+  			case 'filter-air-zones':
+  
+  				var status = $el.attr('class')
+  				if(status == 'active') {
+  					d3.selectAll('.air-zone').classed('hidden', false);
+  					$el.attr('class', '');
+  				}
+  				else {
+  					d3.selectAll('.air-zone').classed('hidden', true);
+  					$el.attr('class', 'active');
+  				}
+  
+  				break;
+  
+  			case 'filter-submarine-zones':
+  
+  				var status = $el.attr('class')
+  				if(status == 'active') {
+  					d3.selectAll('.submarine-zone').classed('hidden', false);
+  					$el.attr('class', '');
+  				}
+  				else {
+  					d3.selectAll('.submarine-zone').classed('hidden', true);
+  					$el.attr('class', 'active');
+  				}
+  
+  				break;
+  
+  			case 'filter-convoy-routes':
+  
+  				var status = $el.attr('class')
+  				if(status == 'active') {
+  					d3.selectAll('.convoy-route').classed('hidden', false);
+  					$el.attr('class', '');
+  				}
+  				else {
+  					d3.selectAll('.convoy-route').classed('hidden', true);
+  					$el.attr('class', 'active');
+  				}
+  
+  				break;
   
   			case 'filter-event':
   
@@ -1260,7 +1978,128 @@ window.require.register("views/interface_view", function(exports, require, modul
           document.webkitCancelFullScreen();
         }
       }
+    },
+  
+    pauseGame: function(event){
+    	event.preventDefault();
+  
+    	console.log('pause clicked');
+  
+    	if(!$(event.target).hasClass('paused')) {
+    		clearInterval(this.game.gameLoopInterval);
+    		$(event.target).addClass('paused');
+    	}
+    	else{
+    		this.game.gameLoopInterval = setInterval(this.game.gameIntervalFunction, 1000);
+    		$(event.target).removeClass('paused');
+    	}
     }
+  
+  });
+  
+});
+window.require.register("views/location_view", function(exports, require, module) {
+  var View = require('./view');
+  var TooltipView = require('./tooltip_view');
+  
+  module.exports = View.extend({
+    className : 'ship',
+    template: require('./templates/location'),
+  
+   	events: {
+      'mouseenter': 'showInfo',
+      'click circle.ship': 'showInfo'
+    },
+  
+    initialize: function(options){
+  		this.model = this.options.location;
+      this.worldmap = this.options.worldmap;
+  
+  		_.bindAll(this, 'showInfo', 'hideInfo');
+  	},
+  
+  	render: function(){
+  		var $this = this;
+  	
+  		// append the description text to the body as html
+  		var g = d3.select('.ships')
+        .append('g')
+        .attr('class', function(){
+          return 'ship-' + $this.model.get('id') + ' locale-' + $this.model.get('locale') + ' country-' + $this.model.get('country') + ' ship-class-' + $this.model.get('ship_class') + ' ship-type-' + $this.model.get('ship_type'); 
+  
+        })
+        .attr('title', $this.model.get('name'))
+        .attr('rel', 'ship-' + $this.model.get('id')) 
+        .attr('width', 2)
+        .attr('height', 2)
+        .on('click', $this.shipMouseenter)
+        .on('mouseenter', $this.shipMouseenter)
+        .on('mouseout', $this.shipMouseout)
+        .on('mousemove', $this.shipMousemove)
+        .attr('transform', 'translate('+ $this.worldmap.projection([$this.model.get('y'), $this.model.get('x')]) +')');
+  
+      g.append('circle')
+        .attr('r', 1.4)
+        .style('opacity', 0)
+        .transition()
+        .duration(1500)
+        .style('opacity', 1.0)
+        .attr('class', function(){
+        	return 'ship ' + $this.model.get('locale');
+        });
+  
+      d3.select('.plot').append('circle')
+       	.attr('class', 'explosion')
+       	.attr('r', 1)
+       	.transition()
+        .attr('transform', 'translate('+ $this.worldmap.projection([$this.model.get('y'), $this.model.get('x')]) +')')
+       	.duration(500)
+       	.attr('r', 64)
+       	.style('opacity', 0.0)
+       	.remove();	 
+  			
+  		// add sunken ship report to the list
+  		$('#sunk-reports').append($this.template( $this.model.toJSON() ));      
+  	},
+  
+  	shipMouseenter: function(elem){
+      var relatedEl = d3.select(this).attr('rel');
+  
+      $('#tooltip #tooltip-content').html( $('#' + relatedEl).html() );
+      $('#tooltip').addClass('tooltip-ship');
+  
+      //check position
+      
+      $('#tooltip').css({
+        'left': d3.event.pageX - 120,
+        'top': d3.event.pageY - $('#tooltip').outerHeight() - 32
+      });
+      $('#tooltip').stop().fadeIn(0);
+    },
+  
+    shipMouseout: function(elem){
+      $('#tooltip').stop().fadeOut(0, function(){ $(this).removeClass('tooltip-ship'); });
+    },
+  
+    shipMousemove: function(elem){
+      $('#tooltip').css({
+        'left': d3.event.pageX - 120,
+        'top': d3.event.pageY - $('#tooltip').outerHeight() - 32
+      });
+    },
+  
+  	showInfo: function(){
+  		console.log('showing info');
+  		var $this = this;
+  
+  		var tooltip = new TooltipView({ data: $this.model, SVGObject: $this });
+  				tooltip.render();
+  	},
+  
+  	hideInfo: function(){
+  		console.log('hiding info');
+  	}
+  
   
   });
   
@@ -1321,211 +2160,22 @@ window.require.register("views/province_view", function(exports, require, module
   });
   
 });
-window.require.register("views/statistics_view", function(exports, require, module) {
-  var View = require('./view');
-  
-  module.exports = View.extend({
-    id: 'statistics',
-    template: require('./templates/statistics'),
-  
-   	events: {
-      'click #statistics-menu li': 'switchStatistic'
-    },
-  
-    initialize: function(options){
-  		//this.worldmap = this.options.worldmap;
-  
-  		this.plot = '#graph-plot';
-  		this.SVGplot;
-  
-  		// 1. submarines / destroyers
-  
-  		this.data = [
-  			{
-  				'1938': [23],
-  				'1939': [34],
-  				'1940': [46],
-  				'1941': [78]
-  				
-  			},
-  			{
-  				'1938': [7],
-  				'1939': [12],
-  				'1940': [13],
-  				'1941': [25]
-  			}
-  		];
-  
-  
-  		this.sunkSubs = [
-  			[1939, 9],
-  			[1940, 23],
-  			[1941, 35],
-  			[1942, 86],
-  			[1943, 236],
-  			[1944, 235],
-  			[1945, 122]
-  		];
-  
-  		// sunk ships in the atlantic
-  		// year / sunk ships / sunk ships by submarines / sunk germany submarines
-  
-  		// source http://www.world-war-2.info/statistics/
-  		this.sunkShips = [
-  			[1939, 222, 114, 9],
-  			[1940, 1059, 471, 23],
-  			[1941, 1299, 432, 35],
-  			[1942, 1664, 1160, 86],
-  			[1943, 597, 377, 236],
-  			[1944, 205, 132, 235],
-  			[1945, 104, 56, 122]
-  		];
-  
-  		console.log('loading statistics view');
-  		_.bindAll(this, 'afterRender', 'switchStatistic', 'renderStatisticPlot');
-  	},
-  
-  	afterRender: function(){
-  		this.renderStatisticPlot();
-  	},
-  
-  	// render the D3 graph plot
-  	switchStatistic: function(event){
-  		var currentStatistic = $(event.target).attr('id');
-  
-  		//console.log(currentStatistic);
-  	},
-  
-  	renderStatisticPlot: function(){
-  
-  		console.log('rendering plot');
-  		$('#graph-plot').empty();
-  		$('#plot').empty();
-  
-  		this.SVGplot = d3.select('#plot')
-  			.append('svg')
-  			.attr('width', 720)
-  			.attr("height", 520)
-  				.append("g")
-  				.attr("transform", "translate(48,48)");
-  
-  		var x = d3.scale.linear().domain([1939, 1945]).range([0, 580]);
-  		var y = d3.scale.linear().domain([0, 50]).range([400, 0]);
-  
-  		var xAxis = d3.svg.axis()
-  			.scale(x)
-  			.orient('bottom')
-  			.ticks(7)
-  			.tickFormat(d3.format('.0f'));
-  
-  		var yAxis = d3.svg.axis()
-  			.scale(y)
-  			.orient('left')
-  			.ticks(12);
-  
-  		var line = d3.svg.line()
-  			.interpolate("cardinal")
-  			.x(function(d) { return x(d[0]); })
-  			.y(function(d) { return y(d[1]); });
-  
-  		var lineSubs = d3.svg.line()
-  			.interpolate("cardinal")
-  			.x(function(d) { return x(d[0]); })
-  			.y(function(d) { return y(d[2]); });
-  
-  		var lineSubsSunk = d3.svg.line()
-  			.interpolate("cardinal")
-  			.x(function(d) { return x(d[0]); })
-  			.y(function(d) { return y(d[3]); });
-  
-  		//x.domain(d3.extent(this.sunkShips, function(d) { return d[0]; }));
-  		y.domain([0, d3.max(this.sunkShips, function(d) { return d[1]; })]);
-  
-  
-  		this.SVGplot.append("g")
-  				.attr("class", "x axis")
-  				.attr("transform", "translate(48, 424)")
-  				.call(xAxis);
-  
-  		this.SVGplot.append("g")
-  				.attr("class", "y axis")
-  				.attr("transform", "translate(24, 0)")
-  				.call(yAxis)
-  					.append("text")
-  					.attr("transform", "translate(-64, 0) rotate(-90)")
-  					.attr("y", 6)
-  					.attr("dy", ".71em")
-  					.style("text-anchor", "end")
-  					.text("Sunk Ships per year (Atlantic)");
-  
-  		var graph = this.SVGplot.selectAll('.line-graph')
-  				.data(this.sunkShips[0])
-  				.enter()
-  				.append('g')
-  				.attr("class", "unemployment-graph");
-  
-  		graph.append("path")
-  				.attr("class", "line sunk-ships-line")
-  				.attr('transform', 'translate(48,0)')
-  				.attr("d", line(this.sunkShips));
-  
-  		graph.append("path")
-  			.attr("class", "line sunk-ships-submarine-line")
-  			.attr('transform', 'translate(48,0)')
-  			.attr("d", lineSubs(this.sunkShips));
-  
-  		graph.append("path")
-  			.attr("class", "line sunk-submarines-line")
-  			.attr('transform', 'translate(48,0)')
-  			.attr("d", lineSubsSunk(this.sunkShips));
-  
-  
-  		var labels = this.SVGplot
-  			.append('g')
-  			.attr('class', 'labels')
-  			.attr('transform', 'translate(460, 48)');
-  
-  			labels
-  				.append('text')
-  					.text('total ships sunk')
-  					.attr('fill', 'steelblue');
-  
-  			labels
-  				.append('text')	
-  					.text('ships sunk by submarines')
-  					.attr('fill', 'red')
-  					.attr('transform', 'translate(0, 24)');
-  
-  			labels
-  				.append('text')	
-  					.text('axis submarines sunk')
-  					.attr('fill', 'green')
-  					.attr('transform', 'translate(0, 48)');
-  
-  
-  
-  		this.$('#graph-plot').html( $('#plot').html() );
-  
-  	}
-  
-  });
-  
-});
-window.require.register("views/sunken_ship_view", function(exports, require, module) {
+window.require.register("views/ship_view", function(exports, require, module) {
   var View = require('./view');
   var TooltipView = require('./tooltip_view');
   
   module.exports = View.extend({
-    className : 'sunken-ship',
-    template: require('./templates/sunken_ship'),
+    className : 'ship',
+    template: require('./templates/ship'),
   
    	events: {
       'mouseenter': 'showInfo',
-      'click circle.sunken-ship': 'showInfo'
+      'click circle.ship': 'showInfo'
     },
   
     initialize: function(options){
   		this.model = this.options.ship;
+      this.worldmap = this.options.worldmap;
   
   		_.bindAll(this, 'showInfo', 'hideInfo');
   	},
@@ -1534,37 +2184,70 @@ window.require.register("views/sunken_ship_view", function(exports, require, mod
   		var $this = this;
   	
   		// append the description text to the body as html
-  		d3.select('.plot').append('circle')
-  			.on('mouseover', $this.showInfo)
-        .on('mouseout', $this.hideInfo)
-  			.style('opacity', 0)
-  			.transition()
-  			.duration(1500)
-  			.style('opacity', 1.0)
-        .attr('r', 2)
-        .attr('cx', $this.model.get('x'))
-        .attr('cy', $this.model.get('y'))
+  		var g = d3.select('.ships')
+        .append('g')
         .attr('class', function(){
-        	return 'sunken-ship ' + $this.model.get('country');
+          return 'ship-' + $this.model.get('id') + ' locale-' + $this.model.get('locale') + ' country-' + $this.model.get('country') + ' ship-class-' + $this.model.get('ship_class') + ' ship-type-' + $this.model.get('ship_type'); 
+  
         })
         .attr('title', $this.model.get('name'))
-        .attr('rel', $this.model.get('id'));
+        .attr('rel', 'ship-' + $this.model.get('id')) 
+        .attr('width', 2)
+        .attr('height', 2)
+        .on('click', $this.shipMouseenter)
+        .on('mouseenter', $this.shipMouseenter)
+        .on('mouseout', $this.shipMouseout)
+        .on('mousemove', $this.shipMousemove)
+        .attr('transform', 'translate('+ $this.worldmap.projection([$this.model.get('y'), $this.model.get('x')]) +')');
   
+      g.append('circle')
+        .attr('r', 1.4)
+        .style('opacity', 0)
+        .transition()
+        .duration(1500)
+        .style('opacity', 1.0)
+        .attr('class', function(){
+        	return 'ship ' + $this.model.get('locale');
+        });
   
-       d3.select('.plot').append('circle')
+      g.append('circle')
        	.attr('class', 'explosion')
        	.attr('r', 1)
-       	.attr('cx', $this.model.get('x'))
-       	.attr('cy', $this.model.get('y'))
        	.transition()
-       	.duration(600)
-       	.attr('r', 32)
+       	.duration(1200)
+       	.attr('r', 48)
        	.style('opacity', 0.0)
        	.remove();	 
   			
   		// add sunken ship report to the list
-  		$('#sunk-reports').append($this.template);      
+  		$('#sunk-reports').append($this.template( $this.model.toJSON() ));      
   	},
+  
+  	shipMouseenter: function(elem){
+      var relatedEl = d3.select(this).attr('rel');
+  
+      $('#tooltip #tooltip-content').html( $('#' + relatedEl).html() );
+      $('#tooltip').addClass('tooltip-ship');
+  
+      //check position
+      
+      $('#tooltip').css({
+        'left': d3.event.pageX - 120,
+        'top': d3.event.pageY - $('#tooltip').outerHeight() - 32
+      });
+      $('#tooltip').stop().fadeIn(0);
+    },
+  
+    shipMouseout: function(elem){
+      $('#tooltip').stop().fadeOut(0, function(){ $(this).removeClass('tooltip-ship'); });
+    },
+  
+    shipMousemove: function(elem){
+      $('#tooltip').css({
+        'left': d3.event.pageX - 120,
+        'top': d3.event.pageY - $('#tooltip').outerHeight() - 32
+      });
+    },
   
   	showInfo: function(){
   		console.log('showing info');
@@ -1577,7 +2260,6 @@ window.require.register("views/sunken_ship_view", function(exports, require, mod
   	hideInfo: function(){
   		console.log('hiding info');
   	}
-  
   
   });
   
@@ -1623,6 +2305,251 @@ window.require.register("views/templates/context", function(exports, require, mo
     (function() {
       (function() {
         __out.push('<h2 id="context-headline"></h2>\n<span class="close-btn"> &times;</span>\n\n<div id="context-content">\n\t<span id="loading">Loading ...</span>\n</div>\n\n<div id="context-footer"></div>');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  }
+});
+window.require.register("views/templates/context_diplomacy", function(exports, require, module) {
+  module.exports = function (__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+        __out.push('<h2>Coming Soon</h2>');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  }
+});
+window.require.register("views/templates/context_events", function(exports, require, module) {
+  module.exports = function (__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+        __out.push('<h2>Coming Soon</h2>');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  }
+});
+window.require.register("views/templates/context_feedback", function(exports, require, module) {
+  module.exports = function (__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+        __out.push('<form id="feedback-form" action="" method="post">\n\n  <h2>Giving feedback is important</h2>\n  <p>If you have important informations or any other hint, please let me know</p>\n\n  <div class="input-wrap">\n    <select id="subject" name="subject">\n      <option value="">Choose Subject</option>\n      <option value="Event">Event</option>\n      <option value="Ship">Ship</option>\n      <option value="Website">Event</option>\n      <option value="Other">Other</option>\n    </select>\n  </div>\n\n  <div class="input-wrap">\n    <input type="text" id="name" name="name" placeholder="Your Name" />\n  </input>\n\n  <div class="input-wrap">\n    <input type="email" id="email" name="email" placeholder="Email" />\n  </div>\n\n  <div class="input-wrap">\n    <label for="message">Please give me some information</label> <br/>\n    <textarea id="message" name="message" placeholder="Message"></textarea>\n  </div>\n\n  <div class="input-wrap">\n    <input type="submit" id="submit-btn" name="submit-btn" value="send" />\n  </div>\n\n  <div id="form-process"></div>\n\n</form>');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  }
+});
+window.require.register("views/templates/context_statistics", function(exports, require, module) {
+  module.exports = function (__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+        __out.push('<div id="content-left">\n\t<ul id="statistics-menu">\n\t\t<li id="sunken-ships"> &raquo; Show Sunken Ships</li>\n\t\t<li id="ships-comparison"> &raquo; Ships Comparison</li>\n\t\t<li id="ship-production"> &raquo; Ships Production</li>\n    <li id="submarine-losses"> &raquo; Submarine Losses (Ger)</li>\n\t</ul>\n</div>\n\n<div id="content-right">\n\t<div id="graph-plot"></div>\n</div>');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  }
+});
+window.require.register("views/templates/context_units", function(exports, require, module) {
+  module.exports = function (__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+        __out.push('<h2>Coming Soon</h2>');
       
       }).call(this);
       
@@ -1736,33 +2663,90 @@ window.require.register("views/templates/event", function(exports, require, modu
     }
     (function() {
       (function() {
-        __out.push('<li class="event" id="');
+        __out.push('<li class="event" id="event-');
       
         __out.push(__sanitize(this.id));
       
-        __out.push('">\n\t<span class="close-btn"> &times;</span>\n\n\t<span class="event-title">');
+        __out.push('" x="');
       
-        __out.push(__sanitize(this.name));
+        __out.push(__sanitize(this.x));
       
-        __out.push('</span>\n\t<span class="event-date">');
+        __out.push('" y="');
+      
+        __out.push(__sanitize(this.y));
+      
+        __out.push('">\n  <span class="event-date">');
       
         __out.push(__sanitize(this.date));
+      
+        __out.push('</span>\n\t<span class="event-title">');
+      
+        __out.push(__sanitize(this.name));
       
         __out.push('</span>\n\t<span class="event-description">');
       
         __out.push(__sanitize(this.description));
       
-        __out.push('</span>\n\n\t<div class="event-footer">\n\t\t');
+        __out.push('</span>\n\n\t<div class="event-actions">\n\t\t');
       
         if (this.x && this.y) {
           __out.push('\n\t\t\t<span class="show-on-map-btn" x="');
           __out.push(__sanitize(this.x));
           __out.push('" y="');
           __out.push(__sanitize(this.y));
-          __out.push('">Show on Map</span>\n\t\t');
+          __out.push('">&raquo; show on map</span>\n\t\t');
         }
       
-        __out.push('\n\t</div>\n</li>');
+        __out.push('\n    <span class="close-btn"> &times;</span>\n\t</div>\n</li>');
+      
+      }).call(this);
+      
+    }).call(__obj);
+    __obj.safe = __objSafe, __obj.escape = __escape;
+    return __out.join('');
+  }
+});
+window.require.register("views/templates/faction", function(exports, require, module) {
+  module.exports = function (__obj) {
+    if (!__obj) __obj = {};
+    var __out = [], __capture = function(callback) {
+      var out = __out, result;
+      __out = [];
+      callback.call(this);
+      result = __out.join('');
+      __out = out;
+      return __safe(result);
+    }, __sanitize = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else if (typeof value !== 'undefined' && value != null) {
+        return __escape(value);
+      } else {
+        return '';
+      }
+    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
+    __safe = __obj.safe = function(value) {
+      if (value && value.ecoSafe) {
+        return value;
+      } else {
+        if (!(typeof value !== 'undefined' && value != null)) value = '';
+        var result = new String(value);
+        result.ecoSafe = true;
+        return result;
+      }
+    };
+    if (!__escape) {
+      __escape = __obj.escape = function(value) {
+        return ('' + value)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;');
+      };
+    }
+    (function() {
+      (function() {
+      
       
       }).call(this);
       
@@ -1811,7 +2795,7 @@ window.require.register("views/templates/home", function(exports, require, modul
     }
     (function() {
       (function() {
-        __out.push('<div id="home">\n\t<div id="content">\n  \t<h1>Die Atlantikschlacht</h1>\n\n\t  <ul id="home-list">\n\t  \t<li class="column">\n\t  \t\t<p>\n\t  \t\t\tMit Ausbruch des Zweiten Weltkrieges in Europa am 01. September 1939 begann zugleich die längste und vielleicht \n\t  \t\t\tauch wichtigste Schlacht des Krieges - die Atlantikschlacht.\n\t  \t\t</p>\n\t  \t\t<p>\n\t  \t\t\tDie Deutsche Kriegsmarine versuchte dabei die Britische Handelsschifffahrt durch Angriffe von Über- und Unterwasserschiffen \n\t  \t\t\tzu beeinträchtigen. Das Ziel bestand darin Großbritannien durch eine Seeblockade von allen Seewegen und Importen abzuschneiden, \n\t  \t\t\tum so das Land zur Kapitulation zu zwingen. \n\t  \t\t</p>\n\t  \t\t<p>\n\t  \t\t\tDa Großbritanniens Wirtschaft und Rüstung stark abhängig von Importen war, musste gewährleistet werden, dass die Schifffahrtswege\n\t  \t\t\tgeschützt werden. Schiffe die den Atlantik in Richtung der Britischen Inseln ansteuerten, wurden in Konvois zusammengefasst und von Kriegsschiffen eskortiert. Im Verlauf des Krieges stieg die Zahl der eingesetzten Kriegsschiffe kontinuierlich an.\n\t  \t\t</p>\n\t  \t</li>\n\t  \t<li class="column">\n\t  \t\t<p>\n\t  \t\t\tDie Besetzung Norwegens und Fankreichs im Frühjahr 1940 ermöglichte es der Deutschen Kriegsmarine ihre Schiffe \n\t  \t\t\tund U-Boote außerhalb Deutschlands zu stationieren, um einen besseren Zugang zum Atlantik zu erlangen. Großbritannien war während dieser Zeit gezwungen sich gegen die Achsenmächte in Europa allein zu verteidigen.\n\t  \t\t</p>\n\t  \t\t<p>\n\t  \t\t\t<img src="img/photos/the-battle-of-the-north-atlantic-allied-convo-L-QZQh3B.jpeg" title="Photo " />\n\t  \t\t</p>\n\t  \t</li>\n\t  \t<li class="column">\n\t  \t\t<p>\n\t  \t\t\tMit dem Kriegseintritt der USA änderte sich die startegische Situation in der Atlantikschlacht erheblich.\n\t  \t\t\tNun konnten die Alliierten das nahezu unerschöpfliche Rüstungspotential der USA ausnutzen. Die Devise hieß Mehr Schiffe zu bauen, als der Gegner versenken kann. Gleichzeitig wurde durch die Einführung neuer Technologien, wie dem Sonar und das Radar sowie Fortschritte in der Entschlüsselung der Deutschen Kommunikationsstruktur die Deutsche U-Bootflotte zunehmend in die defensive gedrängt.\n\n\t  \t\t\tMan erwartete eine erneute Wende der Schlacht durch den Einsatz neuer U-Boottypen.\n\t  \t\t</p>\n\t  \t\t<p>\n\t  \t\t\tDas Ende des Zweiten Weltkrieges in Europa war auch das Ende der Atlantkischlacht, \n\t  \t\t\tInsgesamt forderte die Schlacht zur See mehr als 90.000 Menschenleben <span class="text-small">(Quelle. <a href="http://en.wikipedia.org/wiki/Battle_of_the_Atlantic" target="_blank">Wikipedia</a>)</small>.\n\t  \t\t</p>\n\t  \t</li>\n\t  </ul>\n\n\t  <ul id="navigation">\n\t  \t<li><a class="btn" id="home-list-prev-btn" href="#">&laquo; zurück</a></li>\n\t  \t<li><a class="btn start-btn" href="#worldmap"> Los geht\'s</a></li>\n\t  \t<li><a class="btn" id="home-list-next-btn" href="#">weiterlesen &raquo;</a></li>\n\t  </ul>\n\n\t</div>\n</div>\n\n<footer id="footer"> \n\t<ul id="footer-menu">\n\t\t<li id="home"><a href="/">Home</a></li>\n\t\t<li id="impressum"><a href="#imprint">Impressum</a></li>\n\t\t<li id="project"><a href="#project">Projekt</a></li>\n\t\t<li id="feedback"><a href="#feedback">Feedback</a></li>\n\t</ul>\n</footer>');
+        __out.push('<div id="home">\n\t<div id="content">\n  \t<h1>Die Atlantikschlacht</h1>\n\n\t  <ul id="home-list">\n\t  \t<li class="column">\n\t  \t\t<p>\n\t  \t\t\tMit Ausbruch des Zweiten Weltkrieges in Europa am 01. September 1939 begann zugleich die längste und vielleicht \n\t  \t\t\tauch wichtigste Schlacht des Krieges - die Atlantikschlacht.\n\t  \t\t</p>\n\t  \t\t<p>\n\t  \t\t\tDie Deutsche Kriegsmarine versuchte dabei die Britische Handelsschifffahrt durch Angriffe von Über- und Unterwasserschiffen \n\t  \t\t\tzu beeinträchtigen. Das Ziel bestand darin Großbritannien durch eine Seeblockade von allen Seewegen und Importen abzuschneiden, \n\t  \t\t\tum so das Land zur Kapitulation zu zwingen. \n\t  \t\t</p>\n\t  \t\t<p>\n\t  \t\t\tDa Großbritanniens Wirtschaft und Rüstung stark abhängig von Importen war, musste gewährleistet werden, dass die Schifffahrtswege\n\t  \t\t\tgeschützt werden. Schiffe die den Atlantik in Richtung der Britischen Inseln ansteuerten, wurden in Konvois zusammengefasst und von Kriegsschiffen eskortiert. Im Verlauf des Krieges stieg die Zahl der eingesetzten Kriegsschiffe kontinuierlich an.\n\t  \t\t</p>\n\t  \t</li>\n\t  \t<li class="column">\n\t  \t\t<p>\n\t  \t\t\tDie Besetzung Norwegens und Fankreichs im Frühjahr 1940 ermöglichte es der Deutschen Kriegsmarine ihre Schiffe \n\t  \t\t\tund U-Boote außerhalb Deutschlands zu stationieren, um einen besseren Zugang zum Atlantik zu erlangen. Großbritannien war während dieser Zeit gezwungen sich gegen die Achsenmächte in Europa allein zu verteidigen.\n\t  \t\t</p>\n\t  \t\t<p>\n\t  \t\t\t<img src="img/photos/the-battle-of-the-north-atlantic-allied-convo-L-QZQh3B.jpeg" title="Photo " />\n\t  \t\t</p>\n\t  \t</li>\n\t  \t<li class="column">\n\t  \t\t<p>\n\t  \t\t\tMit dem Kriegseintritt der USA änderte sich die startegische Situation in der Atlantikschlacht erheblich.\n\t  \t\t\tNun konnten die Alliierten das nahezu unerschöpfliche Rüstungspotential der USA ausnutzen. Die Devise hieß Mehr Schiffe zu bauen, als der Gegner versenken kann. Gleichzeitig wurde durch die Einführung neuer Technologien, wie dem Sonar und das Radar sowie Fortschritte in der Entschlüsselung der Deutschen Kommunikationsstruktur die Deutsche U-Bootflotte zunehmend in die defensive gedrängt.\n\n\t  \t\t\tMan erwartete eine erneute Wende der Schlacht durch den Einsatz neuer U-Boottypen.\n\t  \t\t</p>\n\t  \t\t<p>\n\t  \t\t\tDas Ende des Zweiten Weltkrieges in Europa war auch das Ende der Atlantkischlacht, \n\t  \t\t\tInsgesamt forderte die Schlacht zur See mehr als 90.000 Menschenleben <span class="text-small">(Quelle. <a href="http://en.wikipedia.org/wiki/Battle_of_the_Atlantic" target="_blank">Wikipedia</a>)</small>.\n\t  \t\t</p>\n\t  \t</li>\n\t  </ul>\n\n\t  <ul id="navigation">\n\t  \t<li><a class="btn" id="home-list-prev-btn" href="#">&laquo; zurück</a></li>\n\t  \t<li><a class="btn start-btn" href="#worldmap"> Los geht\'s</a></li>\n\t  \t<li><a class="btn" id="home-list-next-btn" href="#">weiterlesen &raquo;</a></li>\n\t  </ul>\n\n\t</div>\n</div>\n\n<!--\n<footer id="footer"> \n\t<ul id="footer-menu">\n\t\t<li id="home"><a href="/">Home</a></li>\n\t\t<li id="impressum"><a href="#imprint">Impressum</a></li>\n\t\t<li id="project"><a href="#project">Projekt</a></li>\n\t\t<li id="feedback"><a href="#feedback">Feedback</a></li>\n\t</ul>\n</footer>\n-->');
       
       }).call(this);
       
@@ -1860,7 +2844,7 @@ window.require.register("views/templates/interface", function(exports, require, 
     }
     (function() {
       (function() {
-        __out.push('<div id="interface">\n\t<div id="header">\n\t\t<div id="game-time">\n\t\t\t<a id="game-btn" href="#"></a>\n\t\t\t<span id="weekday"></span>\n\t\t</div>\n\t\t<div id="mainmenu-container">\n\t\t\t<ul id="mainmenu">\n\t\t\t\t<li id="goto" title="Go to Position">G</li>\n\t\t\t\t<li id="goto-with-zoom" title="Go to Position with zoom">G</li>\n\t\t\t\t<li id="map" title="Show Map">M</li>\n\t\t\t\t<li id="production" title="Production">P</li>\n\t\t\t\t<li id="units" title="Units">U</li>\n\t\t\t\t<li id="events" title="Event History">E</li>\n\t\t\t\t<li id="statistics" title="Statistics">S</li>\n\t\t\t</ul>\n\t\t</div>\n\t</div>\n</div>\n\n\n<div id="map-details"></div>\n\n<ul id="map-modes"></ul>\n<div id="minimap"></div>\n</div>\n\n<div id="filter-container">\n\t<ul id="filter-list">\n\t\t<li id="filter-submarine-zones" title="Submarine Zones">\n\t\t\t<a href="#" title="Submarine Zones"></a>\n\t\t</li>\n\t\t<li id="filter-borders">\n\t\t\t<a href="#" title="Toggle Borders"></a>\n\t\t</li>\n\t\t<li id="filter-convoys">\n\t\t\t<a href="#" title="Show/Hide Convoy Routes"></a>\n\t\t</li>\n\t\t<li id="filter-event">\n\t\t\t<a href="#" title="Call Event (Border)"></a>\n\t\t</li>\n\t\t<li id="filter-diplomacy">\n\t\t\t<a href="#" title="Diplomatic map view"></a>\n\t\t</li>\n\t\t<li id="filter-fullscreen">\n\t\t\t<a href="#" title="Fullscreen"></a>\n\t\t</li>\n\t</ul>\n</div>\n\n<ul id="sunk-reports"></ul>\n<ul id="events-list"></ul>\n\n\n<!-- container will hold the scvg plot, container element must be rendered at startup -->\n<div id="plot"></div>\n\n<div id="tooltip"></div>\n\n\n\n');
+        __out.push('<div id="interface">\n\t<div id="header">\n\t\t<div id="game-time">\n\t\t\t<a id="pause-btn" href="#"></a>\n\t\t\t<span id="weekday"></span>\n\t\t</div>\n\t\t<div id="mainmenu-container">\n\t\t\t<ul id="mainmenu">\n\t\t\t\t<!--<li id="production" title="Production">P</li>-->\n\t\t\t\t<li id="units" title="Units">U</li>\n\t\t\t\t<li id="events" title="Event History">E</li>\n\t\t\t\t<li id="diplomacy" title="Diplomacy">D</li>\n\t\t\t\t<li id="statistics" title="Statistics">S</li>\n\t\t\t\t<li id="feedback" title="Feedback">F</li>\n\t\t\t</ul>\n\t\t</div>\n\t</div>\n</div>\n\n\n<div id="map-details"></div>\n\n<ul id="map-modes"></ul>\n<div id="minimap"></div>\n</div>\n\n<div id="filter-container">\n\t<ul id="filter-list">\n\t\t<li id="filter-submarine-zones" title="Submarine Zones">S</li>\n\t\t<li id="filter-air-zones" title="Toggle Air Zones">A</li>\n\t\t<li id="filter-borders" title="Toggle Borders">B</li>\n\t\t<li id="filter-convoy-routes" title="Toggle Convoy Routes">C</li>\n\t\t<li id="filter-fullscreen" title="Fullscreen">F</li>\n\t</ul>\n</div>\n\n<ul id="sunk-reports"></ul>\n<ul id="ship-list"></ul>\n<ul id="events-list"></ul>\n\n\n<!-- container will hold the scvg plot, container element must be rendered at startup -->\n<div id="plot"></div>\n\n<div id="tooltip">\n\t<div id="tooltip-content"></div>\n  <span class="arrow"></span>\n</div>\n\n\n\n');
       
       }).call(this);
       
@@ -1946,7 +2930,7 @@ window.require.register("views/templates/province", function(exports, require, m
     return __out.join('');
   }
 });
-window.require.register("views/templates/statistics", function(exports, require, module) {
+window.require.register("views/templates/ship", function(exports, require, module) {
   module.exports = function (__obj) {
     if (!__obj) __obj = {};
     var __out = [], __capture = function(callback) {
@@ -1986,72 +2970,47 @@ window.require.register("views/templates/statistics", function(exports, require,
     }
     (function() {
       (function() {
-        __out.push('<div id="content-left">\n\t<ul id="statistics-menu">\n\t\t<li id="sunken-ships"> &raquo; Show Sunken Ships</li>\n\t\t<li id="ships-comparison"> &raquo; Ships Comparison</li>\n\t\t<li id="ship-production"> &raquo; Ships Production</li>\n\t</ul>\n</div>\n\n<div id="content-right">\n\t<div id="graph-plot"></div>\n</div>');
-      
-      }).call(this);
-      
-    }).call(__obj);
-    __obj.safe = __objSafe, __obj.escape = __escape;
-    return __out.join('');
-  }
-});
-window.require.register("views/templates/sunken_ship", function(exports, require, module) {
-  module.exports = function (__obj) {
-    if (!__obj) __obj = {};
-    var __out = [], __capture = function(callback) {
-      var out = __out, result;
-      __out = [];
-      callback.call(this);
-      result = __out.join('');
-      __out = out;
-      return __safe(result);
-    }, __sanitize = function(value) {
-      if (value && value.ecoSafe) {
-        return value;
-      } else if (typeof value !== 'undefined' && value != null) {
-        return __escape(value);
-      } else {
-        return '';
-      }
-    }, __safe, __objSafe = __obj.safe, __escape = __obj.escape;
-    __safe = __obj.safe = function(value) {
-      if (value && value.ecoSafe) {
-        return value;
-      } else {
-        if (!(typeof value !== 'undefined' && value != null)) value = '';
-        var result = new String(value);
-        result.ecoSafe = true;
-        return result;
-      }
-    };
-    if (!__escape) {
-      __escape = __obj.escape = function(value) {
-        return ('' + value)
-          .replace(/&/g, '&amp;')
-          .replace(/</g, '&lt;')
-          .replace(/>/g, '&gt;')
-          .replace(/"/g, '&quot;');
-      };
-    }
-    (function() {
-      (function() {
-        __out.push('<li id="');
+        __out.push('<li id="ship-');
       
         __out.push(__sanitize(this.id));
       
-        __out.push('">\n\t<span class="sunken-ship-title">');
+        __out.push('">\n  <table cellspacing="0" cellpadding="0">\n    <tr>\n      <td class="label">Date</td>\n      <td>');
+      
+        __out.push(__sanitize(this.sunk_date));
+      
+        __out.push('</td>\n    </tr>\n    <tr>\n      <td class="label">Name</td>\n      <td>');
       
         __out.push(__sanitize(this.name));
       
-        __out.push('</span>\n\t<span class="sunken-ship-date">');
+        __out.push('</td>\n    </tr>\n    <tr>\n      <td class="label">Type</td>\n      <td>');
       
-        __out.push(__sanitize(this.date));
+        __out.push(__sanitize(this.ship_type));
       
-        __out.push('</span>\n\t<span class="sunken-ship-description">');
+        __out.push(' (');
       
-        __out.push(__sanitize(this.description));
+        __out.push(__sanitize(this.ship_class));
       
-        __out.push('</span>\n</li>');
+        __out.push(')</td>\n    </tr>\n    <tr>\n      <td class="label">Country</td>\n      <td>');
+      
+        __out.push(__sanitize(this.country));
+      
+        __out.push('</td>\n    </tr>\n    <tr>\n      <td class="label">Report</td>\n      <td>');
+      
+        __out.push(__sanitize(this.sunk_report));
+      
+        __out.push('</td>\n    </tr>\n    <tr>\n      <td class="label">Losses</td>\n      <td>');
+      
+        __out.push(__sanitize(this.seamen_losses));
+      
+        __out.push(' men</td>\n    </tr>\n  </table>\n\n  ');
+      
+        if (this.source) {
+          __out.push('\n  <img src="');
+          __out.push(__sanitize(this.source));
+          __out.push('" class="ship-source "/>\n  ');
+        }
+      
+        __out.push('\n</li>');
       
       }).call(this);
       
@@ -2100,11 +3059,11 @@ window.require.register("views/templates/tooltip", function(exports, require, mo
     }
     (function() {
       (function() {
-        __out.push('<div id="tooltip">\n\t');
+        __out.push('<div id="tooltip">\n\t<div id="tooltip-content">\n    ');
       
         __out.push(__sanitize(this.description));
       
-        __out.push('\n</div>');
+        __out.push('\n  </div>\n  <span class="arrow"></span>\n</div>');
       
       }).call(this);
       
@@ -2166,15 +3125,13 @@ window.require.register("views/tooltip_view", function(exports, require, module)
   var View = require('./view');
   
   module.exports = View.extend({
-    className : 'sunken-ship',
+    className : 'tooltip',
   
    	events: {},
   
     initialize: function(options){
   		this.model = this.options.data;
   		this.SVGObject = this.options.SVGObject;
-  
-  		console.log(this.SVGObject);
   	},
   
   	render: function(){
@@ -2235,6 +3192,8 @@ window.require.register("views/worldmap_view", function(exports, require, module
       this.locations = options.locations;
       this.fleets = options.fleets;
       this.submarineZones = options.submarineZones;
+      this.alliedAirZones = options.alliedAirZones;
+      this.convoyRoutes = options.convoyRoutes;
   
       this.submarineZonesPaths = [];
        
@@ -2242,23 +3201,32 @@ window.require.register("views/worldmap_view", function(exports, require, module
   
       // start-date | end-date
       this.submarineZoneDates = [
-        ['01', '1939-09-01', '1940-03-01', 'German Submarine activity <br/><i>(Sep 1939 - Mar 1940)</i>'],
-        ['02', '1940-03-01', '1940-09-01', 'German Submarine activity (Mar 1940 - Sep 1940)'],
+        ['z-1', '1939-09-01', '1940-03-01', 'German Submarine activity <br/><i>(Sep 1939 - Mar 1940)</i>'],
+        ['z-2', '1940-03-01', '1940-09-01', 'German Submarine activity <br/><i>(Mar 1940 - Sep 1940)</i>'],
         
-        ['03', '1940-09-01', '1941-03-01', 'German Submarine activity (Sep 1940 - Mar 1941)'],
-        ['03-01', '1940-09-01', '1941-03-01', 'German Submarine activity (Sep 1940 - Mar 1941)'],
+        ['z-3', '1940-09-01', '1941-03-01', 'German Submarine activity <br/><i>(Sep 1940 - Mar 1941)</i>'],
+        ['z-4', '1940-09-01', '1941-03-01', 'German Submarine activity <br/><i>(Sep 1940 - Mar 1941)</i>'],
         
-        ['04', '1941-03-01', '1941-09-01', 'German Submarine activity (Mar 1941 - Sep 1941)'],
-        ['04-01', '1941-03-01', '1941-09-01', 'German Submarine activity (Mar 1941 - Sep 1941)'],
+        ['z-5', '1941-03-01', '1941-09-01', 'German Submarine activity <br/><i>(Mar 1941 - Sep 1941)</i>'],
+        ['z-6', '1941-03-01', '1941-09-01', 'German Submarine activity <br/><i>(Mar 1941 - Sep 1941)</i>'],
   
-        ['05', '1941-09-01', '1942-03-01', 'German Submarine activity (Sep 1941 - Mar 1942)'],
+        ['z-7', '1941-09-01', '1942-03-01', 'German Submarine activity <br/><i>(Sep 1941 - Mar 1942)</i>'],
   
-        ['06', '1942-03-01', '1942-09-01', 'German Submarine activity (Mar 1942 - Sep 1942)'],
-        ['06-01', '1942-03-01', '1942-09-01', 'German Submarine activity (Mar 1942 - Sep 1942)']
+        ['z-8', '1942-03-01', '1942-09-01', 'German Submarine activity <br/><i>(Mar 1942 - Sep 1942)</i>'],
+        ['z-9', '1942-03-01', '1942-09-01', 'German Submarine activity <br/><i>(Mar 1942 - Sep 1942)</i>'],
+  
+        ['z-10', '1942-09-01', '1943-06-01', 'German Submarine activity <br/><i>(Sep 1942 - May 1943)</i>'],
+        ['z-11', '1942-09-01', '1943-06-01', 'German Submarine activity <br/><i>(Sep 1942 - May 1943)</i>'],
+        ['z-12', '1942-09-01', '1943-06-01', 'German Submarine activity <br/><i>(Sep 1942 - May 1943)</i>'],
+  
+        ['z-13', '1943-06-01', '1945-05-08', 'German Submarine activity <br/><i>(June 1943 - April 1945)</i>'],
+        ['z-14', '1943-06-01', '1945-05-08', 'German Submarine activity <br/><i>(June 1943 - April 1945)</i>'],
+        ['z-15', '1943-06-01', '1945-05-08', 'German Submarine activity <br/><i>(June 1943 - April 1945)</i>'],
+        ['z-16', '1943-06-01', '1945-05-08', 'German Submarine activity <br/><i>(June 1943 - April 1945)</i>']
       ];
   
   
-      _.bindAll(this, 'redraw', 'afterRender', 'moveTo');
+      _.bindAll(this, 'redraw', 'afterRender', 'moveTo', 'markPosition');
   
       // define global world map settings
       this.worldmapSettings = {
@@ -2282,43 +3250,42 @@ window.require.register("views/worldmap_view", function(exports, require, module
         .attr("width", this.worldmapSettings.width)
         .attr("height", this.worldmapSettings.height);
   
-      this.plot = this.worldmapSVG.append('g')
-        .attr('class', 'plot');
+      this.plot = this.worldmapSVG.append('g').attr('class', 'plot');
   
-      this.zoom = d3.behavior.zoom().scaleExtent([1,8]).on("zoom", this.redraw);
+      // add svg g objects for svg ordering
+      this.countriesSVG = this.plot.append('g').attr('class', 'countries');
+      this.bordersSVG = this.plot.append('g').attr('class', 'borders');
+      this.fationsSVG = this.plot.append('g').attr('class', 'factions');
+      this.submarineZonesSVG = this.plot.append('g').attr('class', 'submarine-zones');
+      this.airZonesSVG = this.plot.append('g').attr('class', 'air-zones');
+      this.convoyRoutesSVG = this.plot.append('g').attr('class', 'convoy-routes');
+      this.locationsSVG = this.plot.append('g').attr('class', 'locations');
+      this.shipsSVG = this.plot.append('g').attr('class', 'ships');
+   
+  
+      this.zoom = d3.behavior.zoom().scaleExtent([1,12]).on("zoom", this.redraw);
       this.worldmapSVG.call(this.zoom); 
   
-      //d3.select('.plot').attr('transform', "translate("+ this.worldmapSettings.startOffsetX +", "+ this.worldmapSettings.startOffsetY +") scale(1,1)");
+  
+      // our map is a miller projection so we need to convert the lat / long to miller appropriate positions
+      // http://bl.ocks.org/mbostock/3734333
+      // http://commons.wikimedia.org/wiki/File:Blank_map_world_gmt_(more_simplified).svg
+      this.projection = d3.geo.miller()
+        .scale((2270 + 1) / 2 / Math.PI)
+        .translate([2270 / 2 + -2.8, 1666 / 2 + 53])
+        .precision(.1);
     },
   
     redraw: function(){
   
-      //console.log(d3.event);
-  
       var translation = d3.event.translate,
-          newx = translation[0];// + this.worldmapSettings.startOffsetX,
-          newy = translation[1];// + this.worldmapSettings.startOffsetY;
+          newx = translation[0];
+          newy = translation[1];
   
       d3.select('.plot')
         .transition()
         .attr('transform', "translate("+ newx +", "+ newy +")" + " scale(" + d3.event.scale + ")")
         .duration(50);
-  
-      // resize the fleet images
-      /*
-      $.each(this.fleetImages, function(idx, fleetImage){
-        var width = fleetImage.attr('width');
-        var height = fleetImage.attr('height');
-  
-        var newWidth = width * d3.event.scale;
-        var newHeight = height * d3.event.scale;
-  
-        fleetImage.attr('width', newWidth);
-        fleetImage.attr('height', newHeight);
-  
-        console.log(width);
-      });
-      */
     },
   
     getRenderData: function(){
@@ -2327,13 +3294,12 @@ window.require.register("views/worldmap_view", function(exports, require, module
   
     render: function(){
       var $this = this;
-  
+      
       // render the world map json data to svg path objects
       $this.model.each(function(country, index){
   
-        var g = $this.plot.append('g');
-            
-        var country = g.append('path')
+        var country = $this.countriesSVG
+              .append('path')
               .attr('id', country.get('id'))
               .attr('class', 'province')
               .attr('rel', country.get('rel'))
@@ -2344,46 +3310,52 @@ window.require.register("views/worldmap_view", function(exports, require, module
               .on('mouseout', $this.provinceMouseout)
               .on('mousemove', $this.provinceMousemove)
               .on('click', $this.provinceClicked);
-  
-         // add the title
-          //country
-            //.append('title')
-            //.text(country.get('id'));
-  
       });
   
-      var $borders = $this.plot.append('g').attr('class', 'borders');
   
+      /*
       $this.borders.each(function(border, index){
-        //console.log(border);
   
-        $borders.append('path')
+        $this.bordersSVG
+          .append('path')
           .attr('id', 'path' + border.get('id'))
           .attr('class', 'border')
-          .attr('d', border.get('path'))
-          .attr('stroke', $this.worldmapSettings.colors.borders);
+          .attr('d', border.get('path'));
   
       });
+      */
   
       // render the locations
-      var $locations = $this.plot.append('g').attr('class', 'locations');
-  
       $this.locations.each(function(location, index){
-        //console.log(location);
   
-        $locations.append('circle')
-          .attr('id', location.get('name'))
-          .attr('class', 'location')
-          .attr('r', 0.8)
-          .attr('cx', location.get('x'))
-          .attr('cy', location.get('y'))
-          .attr('fill', $this.worldmapSettings.colors.borders);
-  
+        if(location.get('location_type') == 'capital'){
+          $this.locationsSVG
+            .append('image')
+            .attr("xlink:href", "img/map/star.svg")
+            .attr('id', location.get('name'))
+            .attr('class', 'location capital')
+            .attr('width', 1.4)
+            .attr('height', 1.4)
+            .attr('transform', function(){
+              return "translate(" + $this.projection([location.get('y'), location.get('x')]) + ")";  
+            });
+        }
+        else{
+          $this.locationsSVG
+            .append('rect')
+            .attr('id', location.get('name'))
+            .attr('class', 'location')
+            .attr('width', 0.8)
+            .attr('height', 0.8)
+            .attr('transform', function(){
+              return "translate(" + $this.projection([location.get('y'), location.get('x')]) + ")";  
+            })
+            .attr('fill', $this.worldmapSettings.colors.borders);
+        }
       });
   
   
-      // render the fleets
-      //console.log($this.fleets);
+  
       $this.fleets.each(function(fleet, index){
   
         // check if fleet has date in the past
@@ -2407,16 +3379,11 @@ window.require.register("views/worldmap_view", function(exports, require, module
   
   
       // render submarine zones
-      var submarineZonesSVG = 
-        $this.plot
-          .append('g')
-          .attr('class', 'submarine-zones');
-  
       _.each(this.submarineZones.models, function(zone, idx){ 
         var startDate = null;
         var endDate = null;
   
-        var path = submarineZonesSVG
+        var path = $this.submarineZonesSVG
           .append('path')
             .attr('id', zone.get('id'))
             .attr('rel', zone.get('rel'))
@@ -2470,7 +3437,7 @@ window.require.register("views/worldmap_view", function(exports, require, module
             .attr('d', zone.get('d'))
             .on('mouseenter', function(d, i){
   
-              $('#tooltip').html( d3.select(this).attr('title') );
+              $('#tooltip #tooltip-content').html( d3.select(this).attr('title') );
   
               $('#tooltip').css({
                 'left': d3.event.pageX + 24,
@@ -2491,6 +3458,63 @@ window.require.register("views/worldmap_view", function(exports, require, module
           $this.submarineZonesPaths.push(obj);
       });
   
+  
+      $this.alliedAirZones.each(function(zone, index){
+  
+        // render object on map
+        $this.airZonesSVG
+          .append('circle')
+            .attr('class', 'air-zone hidden')
+            .attr('r', zone.get('r'))
+            .attr('cx', zone.get('cx'))
+            .attr('cy', zone.get('cy'))
+            .on('mouseenter', $this.provinceMouseover)
+            .on('mousemove', $this.provinceMousemove)
+            .on('mouseout', $this.provinceMouseout);
+  
+      });
+  
+      $this.convoyRoutes.each(function(route, index){
+  
+        // render object on map
+        var convoyRoute = 
+          $this.convoyRoutesSVG
+            .append('path')
+              .attr('class', 'convoy-route')
+              .attr('d', route.get('d'))
+              .attr('rel', route.get('rel'))
+              .on('mouseenter', $this.provinceMouseover)
+              .on('mousemove', $this.provinceMousemove)
+              .on('mouseout', $this.provinceMouseout);
+  
+        // add animation
+        var convoyNode = convoyRoute.node();
+        var convoyLength = convoyNode.getTotalLength();
+  
+        /*
+        var circle = $this.plot.append("circle")
+          .attr({
+            r: 2,
+            fill: '#f33',
+              transform: function () {
+                  var p = convoyNode.getPointAtLength(0);
+                  return "translate(" + [p.x, p.y] + ")";
+              }
+          });
+  
+        circle.transition()
+          .duration(100000)
+          .ease("linear")
+          .attrTween("transform", function (d, i) {
+            return function (t) {
+                var p = convoyNode.getPointAtLength(convoyLength*t);
+                return "translate(" + [p.x, p.y] + ")";
+            }
+        });
+      */
+  
+      });
+  
     	return this.$el;
     },
   
@@ -2500,7 +3524,7 @@ window.require.register("views/worldmap_view", function(exports, require, module
   
       console.log(name);
   
-      $('#tooltip').text(name);
+      $('#tooltip #tooltip-content').html(name);
   
       $('#tooltip').css({
         'left': d3.event.pageX + 24,
@@ -2547,17 +3571,39 @@ window.require.register("views/worldmap_view", function(exports, require, module
     // move the viewport to a certain location
     moveTo: function(x, y){
   
-      x = parseInt(x);
-      y = parseInt(y);
+      zoomLevel = 5;
   
-      this.zoom.translate([x, y]);
-      this.zoom.scale(4);
+      var trans = this.projection([y, x]);
+      trans[0] = - ( (trans[0] * zoomLevel) - $(window).width() / 2);
+      trans[1] = - ( (trans[1] * zoomLevel) - $(window).height() / 2);
+  
+      this.zoom.translate([trans[0], trans[1]]);
+      this.zoom.scale( zoomLevel );
   
       this.plot
         .transition()
-        .duration(800)
-        .attr("transform", "translate(" +  (x + ((8192 - (8192 * 1))/2)) + ',' + (y + ((6061 - (6061 * 1))/2)) + ")scale(" + 4*1 + ")");  
+        .duration(1200)
+        .attr("transform", "translate("+ trans +")scale(" + zoomLevel + ")");  
+    },
   
+    // mark the position on the map
+    markPosition: function(x, y){
+      var $this = this;
+  
+      d3.select('.plot').append('circle')
+        .attr('class', 'explosion')
+        .attr('r', 1)
+        .attr('cx', 0.7)
+        .attr('cy', 0.7)
+        .attr('transform', function(){
+          return "translate(" + $this.projection([y, x]) + ")";  
+        })
+        .attr('stroke', '#999')
+        .transition()
+        .duration(1000)
+        .attr('r', 16)
+        .style('opacity', 0.1)
+        .remove();   
     }
   
   });

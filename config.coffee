@@ -14,6 +14,7 @@ exports.config =
           'vendor/scripts/backbone-0.9.2.js',
           'vendor/scripts/backbone-relational.js',
           'vendor/scripts/d3.v3.min.js',
+          'vendor/scripts/d3.geo.projection.v0.min.js',
           'vendor/scripts/queue.v1.min.js',
           'app/lib/utils.js',
           'vendor/scripts/app-cities.js',

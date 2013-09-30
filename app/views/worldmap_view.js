@@ -11,6 +11,8 @@ module.exports = View.extend({
     this.locations = options.locations;
     this.fleets = options.fleets;
     this.submarineZones = options.submarineZones;
+    this.alliedAirZones = options.alliedAirZones;
+    this.convoyRoutes = options.convoyRoutes;
 
     this.submarineZonesPaths = [];
      
@@ -18,23 +20,32 @@ module.exports = View.extend({
 
     // start-date | end-date
     this.submarineZoneDates = [
-      ['01', '1939-09-01', '1940-03-01', 'German Submarine activity <br/><i>(Sep 1939 - Mar 1940)</i>'],
-      ['02', '1940-03-01', '1940-09-01', 'German Submarine activity (Mar 1940 - Sep 1940)'],
+      ['z-1', '1939-09-01', '1940-03-01', 'German Submarine activity <br/><i>(Sep 1939 - Mar 1940)</i>'],
+      ['z-2', '1940-03-01', '1940-09-01', 'German Submarine activity <br/><i>(Mar 1940 - Sep 1940)</i>'],
       
-      ['03', '1940-09-01', '1941-03-01', 'German Submarine activity (Sep 1940 - Mar 1941)'],
-      ['03-01', '1940-09-01', '1941-03-01', 'German Submarine activity (Sep 1940 - Mar 1941)'],
+      ['z-3', '1940-09-01', '1941-03-01', 'German Submarine activity <br/><i>(Sep 1940 - Mar 1941)</i>'],
+      ['z-4', '1940-09-01', '1941-03-01', 'German Submarine activity <br/><i>(Sep 1940 - Mar 1941)</i>'],
       
-      ['04', '1941-03-01', '1941-09-01', 'German Submarine activity (Mar 1941 - Sep 1941)'],
-      ['04-01', '1941-03-01', '1941-09-01', 'German Submarine activity (Mar 1941 - Sep 1941)'],
+      ['z-5', '1941-03-01', '1941-09-01', 'German Submarine activity <br/><i>(Mar 1941 - Sep 1941)</i>'],
+      ['z-6', '1941-03-01', '1941-09-01', 'German Submarine activity <br/><i>(Mar 1941 - Sep 1941)</i>'],
 
-      ['05', '1941-09-01', '1942-03-01', 'German Submarine activity (Sep 1941 - Mar 1942)'],
+      ['z-7', '1941-09-01', '1942-03-01', 'German Submarine activity <br/><i>(Sep 1941 - Mar 1942)</i>'],
 
-      ['06', '1942-03-01', '1942-09-01', 'German Submarine activity (Mar 1942 - Sep 1942)'],
-      ['06-01', '1942-03-01', '1942-09-01', 'German Submarine activity (Mar 1942 - Sep 1942)']
+      ['z-8', '1942-03-01', '1942-09-01', 'German Submarine activity <br/><i>(Mar 1942 - Sep 1942)</i>'],
+      ['z-9', '1942-03-01', '1942-09-01', 'German Submarine activity <br/><i>(Mar 1942 - Sep 1942)</i>'],
+
+      ['z-10', '1942-09-01', '1943-06-01', 'German Submarine activity <br/><i>(Sep 1942 - May 1943)</i>'],
+      ['z-11', '1942-09-01', '1943-06-01', 'German Submarine activity <br/><i>(Sep 1942 - May 1943)</i>'],
+      ['z-12', '1942-09-01', '1943-06-01', 'German Submarine activity <br/><i>(Sep 1942 - May 1943)</i>'],
+
+      ['z-13', '1943-06-01', '1945-05-08', 'German Submarine activity <br/><i>(June 1943 - April 1945)</i>'],
+      ['z-14', '1943-06-01', '1945-05-08', 'German Submarine activity <br/><i>(June 1943 - April 1945)</i>'],
+      ['z-15', '1943-06-01', '1945-05-08', 'German Submarine activity <br/><i>(June 1943 - April 1945)</i>'],
+      ['z-16', '1943-06-01', '1945-05-08', 'German Submarine activity <br/><i>(June 1943 - April 1945)</i>']
     ];
 
 
-    _.bindAll(this, 'redraw', 'afterRender', 'moveTo');
+    _.bindAll(this, 'redraw', 'afterRender', 'moveTo', 'markPosition');
 
     // define global world map settings
     this.worldmapSettings = {
@@ -58,43 +69,42 @@ module.exports = View.extend({
       .attr("width", this.worldmapSettings.width)
       .attr("height", this.worldmapSettings.height);
 
-    this.plot = this.worldmapSVG.append('g')
-      .attr('class', 'plot');
+    this.plot = this.worldmapSVG.append('g').attr('class', 'plot');
 
-    this.zoom = d3.behavior.zoom().scaleExtent([1,8]).on("zoom", this.redraw);
+    // add svg g objects for svg ordering
+    this.countriesSVG = this.plot.append('g').attr('class', 'countries');
+    this.bordersSVG = this.plot.append('g').attr('class', 'borders');
+    this.fationsSVG = this.plot.append('g').attr('class', 'factions');
+    this.submarineZonesSVG = this.plot.append('g').attr('class', 'submarine-zones');
+    this.airZonesSVG = this.plot.append('g').attr('class', 'air-zones');
+    this.convoyRoutesSVG = this.plot.append('g').attr('class', 'convoy-routes');
+    this.locationsSVG = this.plot.append('g').attr('class', 'locations');
+    this.shipsSVG = this.plot.append('g').attr('class', 'ships');
+ 
+
+    this.zoom = d3.behavior.zoom().scaleExtent([1,12]).on("zoom", this.redraw);
     this.worldmapSVG.call(this.zoom); 
 
-    //d3.select('.plot').attr('transform', "translate("+ this.worldmapSettings.startOffsetX +", "+ this.worldmapSettings.startOffsetY +") scale(1,1)");
+
+    // our map is a miller projection so we need to convert the lat / long to miller appropriate positions
+    // http://bl.ocks.org/mbostock/3734333
+    // http://commons.wikimedia.org/wiki/File:Blank_map_world_gmt_(more_simplified).svg
+    this.projection = d3.geo.miller()
+      .scale((2270 + 1) / 2 / Math.PI)
+      .translate([2270 / 2 + -2.8, 1666 / 2 + 53])
+      .precision(.1);
   },
 
   redraw: function(){
 
-    //console.log(d3.event);
-
     var translation = d3.event.translate,
-        newx = translation[0];// + this.worldmapSettings.startOffsetX,
-        newy = translation[1];// + this.worldmapSettings.startOffsetY;
+        newx = translation[0];
+        newy = translation[1];
 
     d3.select('.plot')
       .transition()
       .attr('transform', "translate("+ newx +", "+ newy +")" + " scale(" + d3.event.scale + ")")
       .duration(50);
-
-    // resize the fleet images
-    /*
-    $.each(this.fleetImages, function(idx, fleetImage){
-      var width = fleetImage.attr('width');
-      var height = fleetImage.attr('height');
-
-      var newWidth = width * d3.event.scale;
-      var newHeight = height * d3.event.scale;
-
-      fleetImage.attr('width', newWidth);
-      fleetImage.attr('height', newHeight);
-
-      console.log(width);
-    });
-    */
   },
 
   getRenderData: function(){
@@ -103,13 +113,12 @@ module.exports = View.extend({
 
   render: function(){
     var $this = this;
-
+    
     // render the world map json data to svg path objects
     $this.model.each(function(country, index){
 
-      var g = $this.plot.append('g');
-          
-      var country = g.append('path')
+      var country = $this.countriesSVG
+            .append('path')
             .attr('id', country.get('id'))
             .attr('class', 'province')
             .attr('rel', country.get('rel'))
@@ -120,46 +129,52 @@ module.exports = View.extend({
             .on('mouseout', $this.provinceMouseout)
             .on('mousemove', $this.provinceMousemove)
             .on('click', $this.provinceClicked);
-
-       // add the title
-        //country
-          //.append('title')
-          //.text(country.get('id'));
-
     });
 
-    var $borders = $this.plot.append('g').attr('class', 'borders');
 
+    /*
     $this.borders.each(function(border, index){
-      //console.log(border);
 
-      $borders.append('path')
+      $this.bordersSVG
+        .append('path')
         .attr('id', 'path' + border.get('id'))
         .attr('class', 'border')
-        .attr('d', border.get('path'))
-        .attr('stroke', $this.worldmapSettings.colors.borders);
+        .attr('d', border.get('path'));
 
     });
+    */
 
     // render the locations
-    var $locations = $this.plot.append('g').attr('class', 'locations');
-
     $this.locations.each(function(location, index){
-      //console.log(location);
 
-      $locations.append('circle')
-        .attr('id', location.get('name'))
-        .attr('class', 'location')
-        .attr('r', 0.8)
-        .attr('cx', location.get('x'))
-        .attr('cy', location.get('y'))
-        .attr('fill', $this.worldmapSettings.colors.borders);
-
+      if(location.get('location_type') == 'capital'){
+        $this.locationsSVG
+          .append('image')
+          .attr("xlink:href", "img/map/star.svg")
+          .attr('id', location.get('name'))
+          .attr('class', 'location capital')
+          .attr('width', 1.4)
+          .attr('height', 1.4)
+          .attr('transform', function(){
+            return "translate(" + $this.projection([location.get('y'), location.get('x')]) + ")";  
+          });
+      }
+      else{
+        $this.locationsSVG
+          .append('rect')
+          .attr('id', location.get('name'))
+          .attr('class', 'location')
+          .attr('width', 0.8)
+          .attr('height', 0.8)
+          .attr('transform', function(){
+            return "translate(" + $this.projection([location.get('y'), location.get('x')]) + ")";  
+          })
+          .attr('fill', $this.worldmapSettings.colors.borders);
+      }
     });
 
 
-    // render the fleets
-    //console.log($this.fleets);
+
     $this.fleets.each(function(fleet, index){
 
       // check if fleet has date in the past
@@ -183,16 +198,11 @@ module.exports = View.extend({
 
 
     // render submarine zones
-    var submarineZonesSVG = 
-      $this.plot
-        .append('g')
-        .attr('class', 'submarine-zones');
-
     _.each(this.submarineZones.models, function(zone, idx){ 
       var startDate = null;
       var endDate = null;
 
-      var path = submarineZonesSVG
+      var path = $this.submarineZonesSVG
         .append('path')
           .attr('id', zone.get('id'))
           .attr('rel', zone.get('rel'))
@@ -246,7 +256,7 @@ module.exports = View.extend({
           .attr('d', zone.get('d'))
           .on('mouseenter', function(d, i){
 
-            $('#tooltip').html( d3.select(this).attr('title') );
+            $('#tooltip #tooltip-content').html( d3.select(this).attr('title') );
 
             $('#tooltip').css({
               'left': d3.event.pageX + 24,
@@ -267,6 +277,63 @@ module.exports = View.extend({
         $this.submarineZonesPaths.push(obj);
     });
 
+
+    $this.alliedAirZones.each(function(zone, index){
+
+      // render object on map
+      $this.airZonesSVG
+        .append('circle')
+          .attr('class', 'air-zone hidden')
+          .attr('r', zone.get('r'))
+          .attr('cx', zone.get('cx'))
+          .attr('cy', zone.get('cy'))
+          .on('mouseenter', $this.provinceMouseover)
+          .on('mousemove', $this.provinceMousemove)
+          .on('mouseout', $this.provinceMouseout);
+
+    });
+
+    $this.convoyRoutes.each(function(route, index){
+
+      // render object on map
+      var convoyRoute = 
+        $this.convoyRoutesSVG
+          .append('path')
+            .attr('class', 'convoy-route')
+            .attr('d', route.get('d'))
+            .attr('rel', route.get('rel'))
+            .on('mouseenter', $this.provinceMouseover)
+            .on('mousemove', $this.provinceMousemove)
+            .on('mouseout', $this.provinceMouseout);
+
+      // add animation
+      var convoyNode = convoyRoute.node();
+      var convoyLength = convoyNode.getTotalLength();
+
+      /*
+      var circle = $this.plot.append("circle")
+        .attr({
+          r: 2,
+          fill: '#f33',
+            transform: function () {
+                var p = convoyNode.getPointAtLength(0);
+                return "translate(" + [p.x, p.y] + ")";
+            }
+        });
+
+      circle.transition()
+        .duration(100000)
+        .ease("linear")
+        .attrTween("transform", function (d, i) {
+          return function (t) {
+              var p = convoyNode.getPointAtLength(convoyLength*t);
+              return "translate(" + [p.x, p.y] + ")";
+          }
+      });
+    */
+
+    });
+
   	return this.$el;
   },
 
@@ -276,7 +343,7 @@ module.exports = View.extend({
 
     console.log(name);
 
-    $('#tooltip').text(name);
+    $('#tooltip #tooltip-content').html(name);
 
     $('#tooltip').css({
       'left': d3.event.pageX + 24,
@@ -323,17 +390,39 @@ module.exports = View.extend({
   // move the viewport to a certain location
   moveTo: function(x, y){
 
-    x = parseInt(x);
-    y = parseInt(y);
+    zoomLevel = 5;
 
-    this.zoom.translate([x, y]);
-    this.zoom.scale(4);
+    var trans = this.projection([y, x]);
+    trans[0] = - ( (trans[0] * zoomLevel) - $(window).width() / 2);
+    trans[1] = - ( (trans[1] * zoomLevel) - $(window).height() / 2);
+
+    this.zoom.translate([trans[0], trans[1]]);
+    this.zoom.scale( zoomLevel );
 
     this.plot
       .transition()
-      .duration(800)
-      .attr("transform", "translate(" +  (x + ((8192 - (8192 * 1))/2)) + ',' + (y + ((6061 - (6061 * 1))/2)) + ")scale(" + 4*1 + ")");  
+      .duration(1200)
+      .attr("transform", "translate("+ trans +")scale(" + zoomLevel + ")");  
+  },
 
+  // mark the position on the map
+  markPosition: function(x, y){
+    var $this = this;
+
+    d3.select('.plot').append('circle')
+      .attr('class', 'explosion')
+      .attr('r', 1)
+      .attr('cx', 0.7)
+      .attr('cy', 0.7)
+      .attr('transform', function(){
+        return "translate(" + $this.projection([y, x]) + ")";  
+      })
+      .attr('stroke', '#999')
+      .transition()
+      .duration(1000)
+      .attr('r', 16)
+      .style('opacity', 0.1)
+      .remove();   
   }
 
 });

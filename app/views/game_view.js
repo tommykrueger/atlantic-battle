@@ -1,6 +1,7 @@
 var View = require('./view');
-var SunkenShipView = require('./sunken_ship_view');
+var ShipView = require('./ship_view');
 var EventView = require('./event_view');
+var FactionView = require('./faction_view');
 
 module.exports = View.extend({
   id : 'game',
@@ -10,14 +11,19 @@ module.exports = View.extend({
   },
 
   initialize: function(options){
-    this.gameLoopInterval = '';
+    this.gameLoopInterval = null;
+    this.gameIntervalFunction = null;
     this.count = 0;
 
     this.worldmap = this.options.worldmap;
 
     this.gameEvents = this.options.gameEvents;
     this.fleets = this.options.fleets;
-    this.sunkenShips = this.options.sunkenShips;
+    this.ships = this.options.ships;
+    this.factions = this.options.factions;
+
+    // holds the faction path that where already rendered
+    this.renderedFactions = [];
 
     // add second is one day in game
     this.intervalTime = (24 * 60 * 60 * 1000); // hours/minutes/seconds/milliseconds
@@ -25,6 +31,7 @@ module.exports = View.extend({
     //this.intervalTime = (60 * 60 * 1000); // minutes/seconds/milliseconds
 
     this.start_date = new Date(1939, 8, 1);
+    //this.start_date = new Date(1940, 3, 1);
     this.end_date = new Date(1945, 4, 8);
     this.new_date = new Date(this.start_date.getTime() + (this.count * this.intervalTime));
 
@@ -54,21 +61,33 @@ module.exports = View.extend({
     ];
 
     
-    _.bindAll(this, 'renderSubmarineZones', 'renderEvents', 'renderFleets', 'renderSunkenShips', 'displayDate', 'gameLoop', 'toggleGameLoop', 'beforeRender');
+    _.bindAll(this, 
+      'renderSubmarineZones', 
+      'renderEvents', 
+      'renderFleets', 
+      'renderShips', 
+      'renderFactions', 
+      'displayDate', 
+      'gameLoop', 
+      'toggleGameLoop', 
+      'beforeRender');
+
     this.displayDate();
   },
 
   render: function(){
 
     var $this = this;
-    this.gameLoopInterval = setInterval(function(){
+    this.gameIntervalFunction = function(){
       $this.gameLoop();
       $this.count++;
-      //console.log($this.count);
-    }, 1000);
+
+      console.log('rendering game loop');
+    };
+
+    this.gameLoopInterval = setInterval(this.gameIntervalFunction, 1000);
 
     return $this.$el;
-
   },
 
   // The loop that will be called on every game tick
@@ -80,8 +99,9 @@ module.exports = View.extend({
 
     this.renderFleets();
     this.renderEvents();
-    this.renderSunkenShips();
+    this.renderShips();
     this.renderSubmarineZones();
+    this.renderFactions();
   },
 
   displayDate: function(){
@@ -148,13 +168,13 @@ module.exports = View.extend({
     });
   },
 
-  renderSunkenShips: function(){
+  renderShips: function(){
     var $this = this;
 
     var gameTime = $this.new_date.getTime();
 
-     _.each(this.sunkenShips.models, function(ship, idx){
-      var shipSunkDate = ship.get('date');
+     _.each(this.ships.models, function(ship, idx){
+      var shipSunkDate = ship.get('sunk_date');
       var date = shipSunkDate.split('-');
       var dateObj = new Date(date[0], date[1]-1, date[2]);
 
@@ -163,11 +183,25 @@ module.exports = View.extend({
       
       if($this.dayDifference(dateObj, $this.new_date) == 0){
 
-        var sunkenShipView = new SunkenShipView({ship: ship}); 
-            sunkenShipView.render();
-            sunkenShipView.initialize();
+        var shipView = new ShipView({
+              ship: ship,
+              worldmap: $this.worldmap
+            }); 
+
+            shipView.render();
+            shipView.initialize();
+
+        // add element to the dom as html
+        var $li = $('<li id="ship-'+ ship.get('id') +'"></li>');
+
+        $li.append( '<span class="ship-date">'+ ship.get('sunk_date') +'</span>' );
+        $li.append( '<span class="ship-country">'+ ship.get('country') +'</span>' );
+        $li.append( '<span class="ship-report">'+ ship.get('sunk_report') +'</span>' );
+
+        $('#ship-list').append( $li );
       }
 
+      
     });
   },
 
@@ -197,6 +231,39 @@ module.exports = View.extend({
           .classed('inactive', true);
       }
 
+    });
+  },
+
+  renderFactions: function(){
+    var $this = this; 
+ 
+    var gameTime = $this.new_date.getTime();
+
+    _.each($this.factions.models, function(factionPath, idx){
+
+      var startDate = factionPath.get('start_date').split('-');
+      var startDateObj = new Date(startDate[1], startDate[2]-1, startDate[3]);
+
+      var endDate = factionPath.get('end_date').split('-');
+      var endDateObj = new Date(endDate[1], endDate[2]-1, endDate[3]);
+
+
+      // activate if date is reached
+      if($this.dayDifference(startDateObj, $this.new_date) <= 0){
+
+        if( $this.renderedFactions.indexOf( factionPath.get('id') ) == -1) {
+
+          var factionView = new FactionView({factionPath: factionPath}); 
+              factionView.render();
+              factionView.initialize();
+
+          $this.renderedFactions.push( factionPath.get('id') );
+        }
+      }
+
+      if($this.dayDifference(endDateObj, $this.new_date) <= 0){
+        d3.select( '#faction-path-' + factionPath.get('id') ).remove();
+      }
     });
   },
 

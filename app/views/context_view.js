@@ -1,5 +1,9 @@
 var View = require('./view');
-var StatisticsView = require('./statistics_view');
+var ContextUnitsView = require('./context_units_view');
+var ContextEventsView = require('./context_events_view');
+var ContextDiplomacyView = require('./context_diplomacy_view');
+var ContextStatisticsView = require('./context_statistics_view');
+var ContextFeedbackView = require('./context_feedback_view');
 
 module.exports = View.extend({
   id: 'context-view',
@@ -13,8 +17,6 @@ module.exports = View.extend({
 		this.context = this.options.context;
 		this.worldmap = this.options.worldmap;
 
-		console.log('Context view loaded');
-
 		_.bindAll(this, 'setContext', 'render', 'afterRender', 'close');
 	},
 
@@ -24,21 +26,38 @@ module.exports = View.extend({
 
 	setContext: function(){
 		var $this = this;
+
 		switch(this.context){
+			case 'units':
+
+				var contextUnitsView = new ContextUnitsView();
+				$this.$('#context-content').html(contextUnitsView.render().el);
+			break;
+			case 'events':
+
+				var contextEventsView = new ContextEventsView();
+				$this.$('#context-content').html(contextEventsView.render().el);
+			break;
+			case 'diplomacy':
+
+				var contextDiplomacyView = new ContextDiplomacyView();
+				$this.$('#context-content').html(contextDiplomacyView.render().el);
+			break;
+			case 'feedback':
+
+				var contextFeedbackView = new ContextFeedbackView();
+				$this.$('#context-content').html(contextFeedbackView.render().el);
+			break;
 			case 'statistics':
 
-				var statisticsView = new StatisticsView();
-					$this.$('#context-content').html(statisticsView.render().el);
+				var contextStatisticsView = new ContextStatisticsView();
+				$this.$('#context-content').html(contextStatisticsView.render().el);
 			break;
 		}
 	},
 
 	close: function(event){
 		var $this = this;
-
-		//$this.$el.fadeOut(250, function(){
-			$this.destroy();
-		//});
+		$this.destroy();
 	}
-
 });

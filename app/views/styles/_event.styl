@@ -1,43 +1,51 @@
 .event
-	margin 6px
-	padding 12px
+	margin 2px
+	padding 4px
 	display block
 	border 1px solid #212121
 	border-radius 6px
 	background #3f3f3f
-	.close-btn
-		width 16px
-		height 16px
-		float right
-		display block
-		font-size 1.4em
-		cursor pointer
-
-	.event-title
-		width 90%
-		margin: 0 0 6px 0;
-		color: #f0f0f0;
-		font-size: 1.4em;
-		display: block;
+	cursor pointer
+	transition all 250ms ease-in-out
+	span
+		display inline-block
+		vertical-align top
 	.event-date
-		margin: 0 0 6px 0;
-		color: #c0c0c0;
-		font-size: 1.1em;
-		display: block;
-	.event-description
-		margin: 0 0 6px 0;
+		width 10%
+		color: #888;
+		font-size: 0.9em;
+	.event-title
+		width 20%
 		color: #f0f0f0;
-		font-size: 1.1em;
-		display: block;
+		font-size: 0.9em;
+		font-weight 600
+	.event-description
+		width 50%
+		color: #f0f0f0;
+		font-size: 0.75em;
 
-	.event-footer
-		padding 6px 0 0 0
+	.event-actions
+		width 15%
+		display inline-block
+		float right
 		text-align right
+
 		.show-on-map-btn
-			padding 6px
 			color #f0f0f0
 			cursor pointer
-			border-radius 4px
-			border 1px solid #333
 		.show-on-map-btn:hover
-			background #900000
+			color #900000
+
+		.close-btn
+			width 16px
+			height 16px
+			float right
+			display block
+			font-size 1.4em
+			cursor pointer
+		.close-btn:hover
+			color #f0f0f0
+
+
+.event:hover
+	background #494949

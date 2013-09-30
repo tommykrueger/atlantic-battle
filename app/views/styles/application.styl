@@ -5,10 +5,13 @@
 @import '_province'
 @import '_interface'
 @import '_dialog'
-@import '_sunken_ship'
+@import '_ship'
 @import '_event'
 @import '_context'
 @import '_statistics'
+@import '_faction'
+@import '_tooltip'
+@import '_feedback'
 
 // Apply a natural box layout model to all elements.
 // http://paulirish.com/2012/box-sizing-border-box-ftw/
@@ -87,12 +90,12 @@ h1
 .text-small
   font-size 0.7em
 
-.sunken-ship
+.ship
   fill #ff0000
-  fill-opacity 0.3
+  fill-opacity 0.6
   cursor pointer
-.sunken-ship:hover
-  fill-opacity 0.8
+.ship:hover
+  fill-opacity 0.9
 
 
 .submarine-zone
@@ -100,6 +103,18 @@ h1
   fill-opacity 0.06
   stroke none
 
+.air-zone
+  fill lightgreen
+  opacity 0.1
+  stroke darkgreen
+  stroke-width 0.1px
+
+.convoy-route
+  fill none
+  opacity 0.1
+  stroke steelblue
+  stroke-width 2px
+  stroke-dasharray: 1px;
 
 .inactive
   transition all 250ms ease-in-out

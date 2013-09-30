@@ -10,14 +10,15 @@ module.exports = View.extend({
 		'click a.ship-link': 'openShipDialog',
 		'click #mainmenu li': 'showScreen',
 
-		'click #filter-list li a': 'filterMap',
+		'click #filter-list li': 'filterMap',
+		'click #pause-btn': 'pauseGame'
   },
 
   initialize: function(options){
 		this.game = this.options.game;
 		this.worldmap = this.options.worldmap;
 
-		_.bindAll(this, 'showScreen');
+		_.bindAll(this, 'showScreen', 'pauseGame');
 
 		/*
 		this.ship_types = [
@@ -29,7 +30,6 @@ module.exports = View.extend({
 
 	openShipDialog: function(event){
 		event.preventDefault();
-		console.log(event);
 	},
 
 	closeProvinceView: function(){
@@ -57,8 +57,8 @@ module.exports = View.extend({
 	filterMap: function(e){
 		e.preventDefault();
 
-		var filterItem = $(e.target).parent();
-		var filter = filterItem.attr('id');
+		var $el = $(e.target);
+		var filter = $el.attr('id');
 
 		switch(filter){
 			case 'filter-borders':
@@ -66,6 +66,47 @@ module.exports = View.extend({
 				d3.selectAll('.borders').classed('hidden');
 				break;
 
+			case 'filter-air-zones':
+
+				var status = $el.attr('class')
+				if(status == 'active') {
+					d3.selectAll('.air-zone').classed('hidden', false);
+					$el.attr('class', '');
+				}
+				else {
+					d3.selectAll('.air-zone').classed('hidden', true);
+					$el.attr('class', 'active');
+				}
+
+				break;
+
+			case 'filter-submarine-zones':
+
+				var status = $el.attr('class')
+				if(status == 'active') {
+					d3.selectAll('.submarine-zone').classed('hidden', false);
+					$el.attr('class', '');
+				}
+				else {
+					d3.selectAll('.submarine-zone').classed('hidden', true);
+					$el.attr('class', 'active');
+				}
+
+				break;
+
+			case 'filter-convoy-routes':
+
+				var status = $el.attr('class')
+				if(status == 'active') {
+					d3.selectAll('.convoy-route').classed('hidden', false);
+					$el.attr('class', '');
+				}
+				else {
+					d3.selectAll('.convoy-route').classed('hidden', true);
+					$el.attr('class', 'active');
+				}
+
+				break;
 
 			case 'filter-event':
 
@@ -107,6 +148,21 @@ module.exports = View.extend({
         document.webkitCancelFullScreen();
       }
     }
+  },
+
+  pauseGame: function(event){
+  	event.preventDefault();
+
+  	console.log('pause clicked');
+
+  	if(!$(event.target).hasClass('paused')) {
+  		clearInterval(this.game.gameLoopInterval);
+  		$(event.target).addClass('paused');
+  	}
+  	else{
+  		this.game.gameLoopInterval = setInterval(this.game.gameIntervalFunction, 1000);
+  		$(event.target).removeClass('paused');
+  	}
   }
 
 });

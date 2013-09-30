@@ -22,8 +22,8 @@
 		"date": "1939-09-04",
 		"name":"Deutschland",
 		"country": "ger",
-		"description": "Schiff wurde durch Britische Bomber beschädigt und letztendlich aufgegeben",
-		"x": 800,
+		"description": "Versenkung von U-14. U-Boot wurde durch Britische Bomber beschädigt und letztendlich aufgegeben",
+		"x": 1000,
 		"y": 500
 	},
 	{
@@ -32,7 +32,7 @@
 		"name":"Deutschland",
 		"country": "ger",
 		"description": "Schiff wurde durch Britische Bomber beschädigt und letztendlich aufgegeben",
-		"x": 770,
+		"x": 970,
 		"y": 450
 	},
 	{
@@ -41,7 +41,10 @@
 		"name":"Deutschland",
 		"country": "ger",
 		"description": "Schiff wurde durch Britische Bomber beschädigt und letztendlich aufgegeben",
-		"x": 700,
+		"x": 900,
 		"y": 500
 	}
 ]
+
+
+

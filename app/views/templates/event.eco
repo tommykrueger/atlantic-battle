@@ -1,13 +1,12 @@
-<li class="event" id="<%= @id%>">
-	<span class="close-btn"> &times;</span>
-
+<li class="event" id="event-<%= @id%>" x="<%= @x %>" y="<%= @y %>">
+  <span class="event-date"><%= @date%></span>
 	<span class="event-title"><%= @name%></span>
-	<span class="event-date"><%= @date%></span>
 	<span class="event-description"><%= @description%></span>
 
-	<div class="event-footer">
+	<div class="event-actions">
 		<% if @x && @y: %>
-			<span class="show-on-map-btn" x="<%= @x %>" y="<%= @y %>">Show on Map</span>
+			<span class="show-on-map-btn" x="<%= @x %>" y="<%= @y %>">&raquo; show on map</span>
 		<% end %>
+    <span class="close-btn"> &times;</span>
 	</div>
 </li>

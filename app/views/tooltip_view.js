@@ -1,15 +1,13 @@
 var View = require('./view');
 
 module.exports = View.extend({
-  className : 'sunken-ship',
+  className : 'tooltip',
 
  	events: {},
 
   initialize: function(options){
 		this.model = this.options.data;
 		this.SVGObject = this.options.SVGObject;
-
-		console.log(this.SVGObject);
 	},
 
 	render: function(){

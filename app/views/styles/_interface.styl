@@ -11,7 +11,7 @@
 
 	#mainmenu-container,
 	#mainmenu
-		width 260px
+		width 230px
 		float right
 	#mainmenu
 		padding 16px 0 0 0
@@ -21,17 +21,20 @@
 		height 24px
 		margin 0 12px 0 0
 		float left
-		background #f0f0f0
 		display block
-		color #e5e5e5
+		color #f0f0f0
+		text-shadow #444 0px 1px 1px
 		cursor pointer
-		line-height 40px
+		line-height 24px
 		text-align center
+		background rgba(64, 64, 64, 0.6)
 		border-left 1px solid rgba(128, 128, 128, 0.6)
 		border-radius 50%
-		box-shadow 1px 1px 2px rgba(128, 128, 128, 0.6)
+		border 1px solid #565656
+		box-shadow 0px 0px 3px rgba(128, 128, 128, 0.6)
 	#mainmenu li:hover
 		background #e0e0e0
+		border 1px solid #aaa
 
 
 
@@ -39,20 +42,21 @@
 #filter-container 
 	position absolute
 	right 12px
-	bottom 12px
+	top 48px
 	li
 		float left
 		width 24px 
 		height 24px
 		margin 0 0 0 6px
 		display block
+		text-align center
+		line-height 24px
+		cursor pointer
+		border-radius 50%
+		box-shadow 1px 1px 2px rgba(128, 128, 128, 0.6)
 		background rgba(120, 120, 120, 0.4)
 	li:hover
 		background rgba(120, 120, 120, 0.8)
-	li a
-		width 100%
-		height 100%
-		display block
 
 
 
@@ -76,33 +80,31 @@
 		border-bottom-left-radius: 12px;
 		box-shadow 1px 1px 2px rgba(128, 128, 128, 0.6)
 
-	a#game-btn
+	a#pause-btn
 		width 24px
 		height 24px
 		margin 12px 0 12px 12px
 		float left
 		display block
 		background url(../img/pause-btn.png) no-repeat
-	a#game-btn.paused
+	a#pause-btn.paused
 		background url(../img/play-btn.png) no-repeat
 
 
 
 #events-list
-	width 320px
+	width 50%
+	height 180px
+	min-width 320px
 	position absolute
-	top 50px
+	bottom 12px
 	right 12px
 	background #333
 	opacity 0.8
 	border 1px solid #000
 	border-radius 6px
+	overflow auto
 
 
-#tooltip
-	padding 6px
-	color #555
-	position absolute
-	border-radius 6px
-	border 1px solid #bbb
-	background rgba(200, 200, 200, 0.4)
+
+	

@@ -6,14 +6,13 @@ module.exports = View.extend({
 
  	events: {
     'click .close-btn': 'closeEvent',
-    'click .show-on-map-btn': 'showOnMap'
+    'click .event': 'showOnMap',
+    'mouseenter .event': 'markOnMap'
   },
 
   initialize: function(options){
 		this.model = this.options.gameEvent;
 		this.worldmap = this.options.worldmap;
-
-		console.log('Event view loaded');
 
 		/*
 		this.date = this.model.attributes.date;
@@ -28,7 +27,7 @@ module.exports = View.extend({
 		this.model.attributes.date = this.date.getDate();
 		*/
 
-		_.bindAll(this, 'render', 'afterRender', 'closeEvent', 'showOnMap');
+		_.bindAll(this, 'render', 'afterRender', 'closeEvent', 'showOnMap', 'markOnMap');
 	},
 
 	render: function(){
@@ -45,20 +44,17 @@ module.exports = View.extend({
 		// add event listener by jQuery due to backbone issue
 		_.defer(function(){
 
-			$('.show-on-map-btn').on('click', function(e){
+			$('.show-on-map-btn, .event').on('click', function(e){
 				var x = $(this).attr('x');
 				var y = $(this).attr('y');
 
 				$this.worldmap.moveTo(x, y); 
 			});
-
-
 		});
 	},
 
 	closeEvent: function(event){
 		var $this = this;
-		console.log('closing event');
 
 		$this.$el.fadeOut(250, function(){
 			$this.destroy();
@@ -67,6 +63,14 @@ module.exports = View.extend({
 
 	showOnMap: function(event){
 		console.log('moving map');
+	},
+
+	markOnMap: function(event){
+
+		this.worldmap.markPosition(
+			$(event.target).attr('x'),
+			$(event.target).attr('y')
+		); 
 	}
 
 });
